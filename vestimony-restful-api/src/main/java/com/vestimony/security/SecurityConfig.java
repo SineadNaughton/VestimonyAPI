@@ -25,7 +25,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	//anyone allowed on sign up page
 	@Override
 	protected void configure(HttpSecurity http) throws Exception{
-		http.cors().and().csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, "/sign_up").permitAll()
+		http.cors().and().csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, "/signup").permitAll()
 		.antMatchers("/*/vestimony/**").hasRole("USER")
 		.antMatchers("/*/floor2/**").hasRole("ADMIN")
 		.and()
