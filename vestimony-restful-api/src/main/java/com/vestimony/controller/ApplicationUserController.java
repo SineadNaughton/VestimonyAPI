@@ -21,7 +21,6 @@ import com.vestimony.service.UserProfileService;
 
 
 @RestController
-
 public class ApplicationUserController {
 
 
@@ -38,7 +37,6 @@ public class ApplicationUserController {
 		return applicationUserService.getAllApplicationUsers();
 	}
 	
-
 	//create
 	@RequestMapping(method=RequestMethod.POST, value="/vestimony/signup")
 	public void addUser(@RequestBody ApplicationUser user) {

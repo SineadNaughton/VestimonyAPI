@@ -1,15 +1,24 @@
 package com.vestimony.model;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-@Table(name = "Application_User")
-public class ApplicationUser  {
+
+public class ApplicationUser implements Serializable   {
 
 	
 	@Id
@@ -34,6 +43,12 @@ public class ApplicationUser  {
 	private int sizeBottom;
 	@Column(name = "Bio")
 	private String bio;
+	
+	@OneToMany(mappedBy="applicationUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Vestimonial> vestimonials = new HashSet<Vestimonial>();
+
+	@OneToMany(mappedBy="applicationUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Post> posts = new HashSet<Post>();
 	
 	public int getHeight() {
 		return height;
@@ -132,6 +147,22 @@ public class ApplicationUser  {
 
 	public void setUserId(long userId) {
 		this.userId = userId;
+	}
+	@JsonIgnore
+	public Set<Vestimonial> getVestimonials() {
+		return vestimonials;
+	}
+
+	public void setVestimonials(Set<Vestimonial> vestimonials) {
+		this.vestimonials = vestimonials;
+	}
+	@JsonIgnore
+	public Set<Post> getPosts() {
+		return posts;
+	}
+
+	public void setPosts(Set<Post> posts) {
+		this.posts = posts;
 	}
 	
 	
