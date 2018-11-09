@@ -48,8 +48,10 @@ Configuration conf = Configuration.builder().options(Option.DEFAULT_PATH_LEAF_TO
 			System.out.println(resultImageUrl);
 			System.out.println(resultProductUrl);
 			
-			Item item = new Item(resultName, resultColour, resultPrice, "Topshop", resultProductUrl, resultImageUrl);
-			item.decideItemCategory(item);
+			//Item item = new Item(resultName, resultColour, resultPrice, "Topshop", resultProductUrl, resultImageUrl);
+			String category = decideItemCategory(resultName);
+			
+			Item item = new Item(resultName, resultColour, resultPrice, "Topshop", resultProductUrl, resultImageUrl, category);
 			
 			
 			Optional<Item> itemExists = itemRespository.findByUrl(resultProductUrl);
@@ -91,7 +93,10 @@ Configuration conf = Configuration.builder().options(Option.DEFAULT_PATH_LEAF_TO
 			System.out.println(resultName);
 			System.out.println(resultPrice);
 				
-				Item item = new Item(resultName, resultColour, resultPrice, "Asos", resultProductUrl, resultImageUrl);
+			String category = decideItemCategory(resultName);
+			
+			Item item = new Item(resultName, resultColour, resultPrice, "ASOS", resultProductUrl, resultImageUrl, category);
+			
 				Optional<Item> itemExists = itemRespository.findByUrl(resultProductUrl);
 				if(!itemExists.isPresent()) {
 					
@@ -99,4 +104,36 @@ Configuration conf = Configuration.builder().options(Option.DEFAULT_PATH_LEAF_TO
 				}
 			}
 	}
+	
+	
+	String decideItemCategory(String name) {
+		name = name.toLowerCase();
+		if (name.contains("top") || name.contains("bodysuit") || name.contains("shirt") || name.contains("blouse")
+				|| name.contains("vest") || name.contains("cami") || name.contains("tee") || name.contains("tank")) {
+			return "top";
+		} else if (name.contains("trouser") || name.contains("pant") || name.contains("legging")
+				|| name.contains("shorts") || name.contains("flare")) {
+			return "trouser";
+		} else if (name.contains("skirt")) {
+			return  "skirt";
+		} else if (name.contains("dress")) {
+			return  "dress";
+		} else if (name.contains("jumper") || name.contains("cardi") || name.contains("polo")
+				|| name.contains("sweater") || name.contains("knit")) {
+			return  "knitwear";
+		} else if (name.contains("bag") || name.contains("clutch") || name.contains("purse") || name.contains("tote")
+				|| name.contains("wallet")) {
+			return  "bag";
+		} else if (name.contains("boot") || name.contains("heel") || name.contains("shoe") || name.contains("pump")
+				|| name.contains("trainer")) {
+			return  "shoe";
+		} else if (name.contains("jacket") || name.contains("coat") ) {
+			return  "coat";
+		} else if (name.contains("jean")  ) {
+			return  "jeans";
+		} else {
+			return  "other";
+		}
+	}
+	
 }

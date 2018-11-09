@@ -1,8 +1,11 @@
 package com.vestimony.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,43 +19,44 @@ import com.vestimony.service.ItemService;
 import com.vestimony.service.WebCrawlerService;
 
 @RestController
-@RequestMapping("/vestimony/items")
+
+@RequestMapping(value = "/vestimony/items", consumes = "application/json", produces = "application/json")
 public class ItemController {
 
 	@Autowired
-	private WebCrawlerService webCrawlerService;
-	@Autowired
 	private ItemService itemService;
-	
-	@GetMapping("/crawl")
-	public void webCrawler() throws UnirestException {
-		webCrawlerService.crawlTopShopNewIn();
-		webCrawlerService.crawlAsosNewIn();
-	}
-	
+
 	@GetMapping(value = "/search")
-	public List<Item> search(@RequestParam("itemName") String itemName){
-		return itemService.search(itemName);
+	public ResponseEntity<List<Item>> search(@RequestParam("itemName") String itemName) {
+		List<Item> items = itemService.search(itemName);
+		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+
 	}
-	
+
+	/*
+	 * OLD SEARCH METHOD
+	 * 
+	 * @GetMapping(value = "/search") public List<Item>
+	 * search(@RequestParam("itemName") String itemName){ return
+	 * itemService.search(itemName); }
+	 */
+
+	// get all
 	@GetMapping
-	public List<Item> getAll(){
+	public ResponseEntity<List<Item>> getAll() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		System.out.println(auth.getPrincipal());
-		return itemService.getAll();
-		
+		List<Item> items = itemService.getAll();
+		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
 	}
-	
-	//filter
-	@GetMapping(value="/filter")
-	public List<Item> filter(@RequestParam(value = "brand", defaultValue = "") String brand, 
-								@RequestParam(value = "colour", defaultValue = "") String colour){
-		return itemService.findByBrandLikeAndColourLike(brand, colour);
-	}
-	
 
-	
-	//sort
-	
+	// filter
+	@GetMapping(value = "/filter")
+	public ResponseEntity<List<Item>> filter(@RequestParam(defaultValue="") String brand,
+			@RequestParam(defaultValue="") String colour) {
+		List<Item> items = itemService.findByBrandLikeAndColourLike(brand, colour);
+		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+	}
+
 	//
 }

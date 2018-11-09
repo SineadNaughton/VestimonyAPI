@@ -22,45 +22,33 @@ public class Post {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(unique = true)
 	private long postId;
-	private String postInfo;
+
+	private String postCaption;
+
 	private long numLikes;
+
 	@Lob
 	private byte[] postImage;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "FkApplicationUser")
 	private ApplicationUser applicationUser;
-	
-	@ManyToMany(fetch = FetchType.LAZY,
-            cascade = {
-                CascadeType.PERSIST,
-                CascadeType.MERGE
-            })
-    @JoinTable(name = "Post_Vestimonial_Link",
-            joinColumns = { @JoinColumn(name = "postId") },
-            inverseJoinColumns = { @JoinColumn(name = "vestimonialId") })
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "Post_Vestimonial_Link", joinColumns = { @JoinColumn(name = "postId") }, inverseJoinColumns = {
+			@JoinColumn(name = "vestimonialId") })
 	private Set<Vestimonial> vestimonials = new HashSet<Vestimonial>();
 
-	
-	
-	
-	
 	public Post() {
 		super();
 	}
-	
-	
-	
 
 	public Post(String postInfo, byte[] postImage, ApplicationUser applicationUser) {
 		super();
-		this.postInfo = postInfo;
+		this.postCaption = postInfo;
 		this.applicationUser = applicationUser;
 		this.postImage = postImage;
 	}
-
-
-
 
 	public long getPostId() {
 		return postId;
@@ -71,11 +59,11 @@ public class Post {
 	}
 
 	public String getPostInfo() {
-		return postInfo;
+		return postCaption;
 	}
 
 	public void setPostInfo(String postInfo) {
-		this.postInfo = postInfo;
+		this.postCaption = postInfo;
 	}
 
 	public long getNumLikes() {
@@ -102,21 +90,12 @@ public class Post {
 		this.vestimonials = vestimonials;
 	}
 
-
-
-
 	public byte[] getPostImage() {
 		return postImage;
 	}
-
-
-
 
 	public void setPostImage(byte[] postImage) {
 		this.postImage = postImage;
 	}
 
-	
-	
-	
 }

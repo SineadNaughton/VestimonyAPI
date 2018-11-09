@@ -1,5 +1,7 @@
 package com.vestimony.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +30,24 @@ public class PostService {
 	private VestimonialRepository vestimonialRespository;
 	
 	//create
-	public void createPost(Post post) {
+	public Post createPost(Post post) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
 		post.setApplicationUser(user);
 		postRepository.save(post);
+		return post;
+	}
+	
+	//get all
+	public List<Post> getAllPosts(){
+		List<Post> posts = new ArrayList<>();
+		postRepository.findAll().forEach(posts::add);
+		return posts;
+	}
+	
+	//get one by id
+	public Optional<Post> getPost(long postId){
+		return postRepository.findById(postId);
 	}
 	
 	//delete posts with no review linked
@@ -44,10 +59,10 @@ public class PostService {
 		return postRepository.findById(postId);
 	}
 	
-	//get one post for user
 	
 	
-	//get all post for user
+	
+	
 	
 	
 }

@@ -36,18 +36,19 @@ public class VestimonialService {
 	private PostRepository postRepository;
 
 	// create new --add post to this
-	public void createVestimonial(Vestimonial vestimonial, long itemId, long postId) {
-		// user
+	public Vestimonial createVestimonial(Vestimonial vestimonial, long itemId, long postId) {
+		// set user
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
 		vestimonial.setApplicationUser(user);
-		// item
+		// set item
 		Item item = itemRepository.findById(itemId).get();
 		vestimonial.setItem(item);
+		
 		// check if exists
-		//if (vestimonialRepository.findByApplicationUserAndItem(user.getUserId(), itemId)==null) {
+		if (!vestimonialRepository.findByApplicationUserAndItem(user, item).isPresent()) {
 
-			// post
+			// associate with post
 			Post post = postRepository.findById(postId).get();
 			Set<Vestimonial> vestimonials = post.getVestimonials();
 			vestimonials.add(vestimonial);
@@ -64,43 +65,31 @@ public class VestimonialService {
 			item.setNumReviews(item.getNumReviews() + 1);
 			numberReviews++;
 			int newRating = (total + vestimonialRating) / (int) numberReviews;
+			//save item
 			item.setRating(newRating);
 			itemRepository.save(item);
-		//}
+			return vestimonial;
+		}
+		else {
+			Vestimonial vestimonalExists = vestimonialRepository.findByApplicationUserAndItem(user, item).get();
+			return vestimonalExists;
+		}
+		
 	}
 
+
 	// link
-	// link
-	public void linkVestimonialToPost(long postId, long vestimonialId) {
+	public Vestimonial linkVestimonialToPost(long postId, long vestimonialId) {
 		Post post = postRepository.findById(postId).get();
 		Vestimonial vestimonial = vestimonialRepository.findById(vestimonialId).get();
 		Set<Vestimonial> vestimonials = post.getVestimonials();
 		vestimonials.add(vestimonial);
 		post.setVestimonials(vestimonials);
 		postRepository.save(post);
+		return vestimonial;
 	}
 
-	// not currently neded
-	/*
-	 * public void linkAnotherVestimonialToPost(long postId, long vestimonialId) {
-	 * Post post = postRepository.findById(postId).get(); Vestimonial vestimonial =
-	 * vestimonialRespository.findById(vestimonialId).get(); Set<Vestimonial>
-	 * vestimonials = post.getVestimonials(); vestimonials.add(vestimonial);
-	 * post.setVestimonials(vestimonials); postRepository.saveAndFlush(post); }
-	 */
-
-	// get all
-	public List<Vestimonial> getAllVestimonials(long itemId) {
-
-		List<Vestimonial> vestimonials = new ArrayList<>();
-		vestimonialRepository.findAll().forEach(vestimonials::add);
-		return vestimonials;
-	}
-
-	// get one
-	public Optional<Vestimonial> getVestimonial(long vestimonialId) {
-		return vestimonialRepository.findById(vestimonialId);
-	}
+	
 
 	// get all for user
 	public List<Vestimonial> getAllVestimonialForUser() {
@@ -110,6 +99,17 @@ public class VestimonialService {
 		user.getVestimonials().forEach(vestimonials::add);
 		return vestimonials;
 	}
+	
+	public Optional<Vestimonial> findByApplicationUserAndItem(long itemId){
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
+		
+		Item item = itemRepository.findById(itemId).get();
+		return vestimonialRepository.findByApplicationUserAndItem(user, item);
+	}
 
-	// get one for user
+
+
+
+	
 }

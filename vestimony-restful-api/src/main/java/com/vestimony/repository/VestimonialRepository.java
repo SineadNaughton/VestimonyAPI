@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.vestimony.model.ApplicationUser;
+import com.vestimony.model.Item;
 import com.vestimony.model.Vestimonial;
 
 
@@ -13,7 +15,9 @@ import com.vestimony.model.Vestimonial;
 public interface VestimonialRepository extends JpaRepository<Vestimonial, Long> {
 	
 	List<Vestimonial> findByApplicationUser(long uerId);
+	
 	List<Vestimonial> findByItem(long itemId);
-	Optional<Vestimonial> findByApplicationUserAndItem(long userId, long itemId);
+	
+	Optional<Vestimonial> findByApplicationUserAndItem(ApplicationUser user, Item item);
 
 }

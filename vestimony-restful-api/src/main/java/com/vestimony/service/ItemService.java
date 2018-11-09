@@ -26,11 +26,9 @@ public class ItemService {
 
 	
 	//filter
-	
-	@SuppressWarnings("deprecation")
 	public List<Item> findByBrandLikeAndColourLike(String brand, String colour){
 		List<Item> items = new ArrayList<>();
-		itemRepository.findByBrandLikeIgnoreCaseAndColourLikeIgnoreCase("%"+brand+"%", "%"+colour+"%", new PageRequest(0, 10, Direction.DESC, "price") ).forEach(items::add);
+		itemRepository.findByBrandLikeIgnoreCaseAndColourLikeIgnoreCase("%"+brand+"%", "%"+colour+"%").forEach(items::add);
 		return items;
 	}
 	
@@ -66,7 +64,6 @@ public class ItemService {
 	
 	//display top rated
 	public List<Item> getAll(){
-		
 		List<Item> items = new ArrayList<>();
 		itemRepository.findAll().forEach(items::add);
 		return items;

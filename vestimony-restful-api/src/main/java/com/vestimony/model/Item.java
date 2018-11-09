@@ -12,7 +12,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -50,7 +49,7 @@ public class Item implements Serializable {
 		super();
 	}
 
-	public Item(String name, String colour, double price, String brand, String url, String image) {
+	public Item(String name, String colour, double price, String brand, String url, String image, String category) {
 		super();
 		this.name = name;
 		this.colour = colour;
@@ -58,6 +57,7 @@ public class Item implements Serializable {
 		this.brand = brand;
 		this.url = url;
 		this.image = image;
+		this.category=category;
 	}
 
 	public Item(long itemId, String name, String colour, double price, String brand, String url, String image,
@@ -141,31 +141,7 @@ public class Item implements Serializable {
 		this.category = category;
 	}
 
-	public void decideItemCategory(Item item) {
-		String name = item.getName().toLowerCase();
-		if (name.contains("top") || name.contains("bodysuit") || name.contains("shirt") || name.contains("blouse")
-				|| name.contains("vest") || name.contains("cami") || name.contains("tee") || name.contains("tank")) {
-			item.setCategory("top");
-		} else if (name.contains("trouser") || name.contains("pant") || name.contains("legging")
-				|| name.contains("shorts")) {
-			item.setCategory("trouser");
-		} else if (name.contains("skirt")) {
-			item.setCategory("skirt");
-		} else if (name.contains("dress")) {
-			item.setCategory("dress");
-		} else if (name.contains("jumper") || name.contains("cardi") || name.contains("polo")
-				|| name.contains("sweater") || name.contains("knit")) {
-			item.setCategory("knitwear");
-		} else if (name.contains("bag") || name.contains("clutch") || name.contains("purse") || name.contains("tote")
-				|| name.contains("wallet")) {
-			item.setCategory("bag");
-		} else if (name.contains("boot") || name.contains("heel") || name.contains("shoe") || name.contains("pump")
-				|| name.contains("trainer")) {
-			item.setCategory("shoe");
-		} else {
-			item.setCategory("other");
-		}
-	}
+	
 
 	public int getSizeAdjustment() {
 		return sizeAdjustment;

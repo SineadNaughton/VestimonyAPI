@@ -25,7 +25,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 	//public Iterable<Item> findAllOrderByCreateDateTimeDesc();
 
-	public List<Item> findByBrandLikeIgnoreCaseAndColourLikeIgnoreCase(String brand, String colour, Pageable pagable);
+	public List<Item> findByBrandLikeIgnoreCaseAndColourLikeIgnoreCase(String brand, String colour);
 
 
 	//filter sort
