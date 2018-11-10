@@ -44,6 +44,9 @@ public class Item implements Serializable {
 	
 	@OneToMany(mappedBy="item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Vestimonial> vestimonials = new HashSet<Vestimonial>();
+	
+	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Image> images = new HashSet<Image>();
 
 	public Item() {
 		super();

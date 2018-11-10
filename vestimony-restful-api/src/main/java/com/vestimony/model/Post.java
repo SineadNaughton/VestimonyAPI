@@ -1,5 +1,6 @@
 package com.vestimony.model;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,6 +16,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 public class Post {
@@ -23,12 +27,15 @@ public class Post {
 	@Column(unique = true)
 	private long postId;
 
-	private String postCaption;
+	private String postInfo;
 
 	private long numLikes;
 
-	@Lob
-	private byte[] postImage;
+
+	
+	@Column
+	@CreationTimestamp
+	private LocalDateTime createDateTime;
 
 	@ManyToOne
 	@JoinColumn(name = "FkApplicationUser")
@@ -38,16 +45,21 @@ public class Post {
 	@JoinTable(name = "Post_Vestimonial_Link", joinColumns = { @JoinColumn(name = "postId") }, inverseJoinColumns = {
 			@JoinColumn(name = "vestimonialId") })
 	private Set<Vestimonial> vestimonials = new HashSet<Vestimonial>();
+	
+	
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Image> images = new HashSet<Image>();
+
 
 	public Post() {
 		super();
 	}
 
-	public Post(String postInfo, byte[] postImage, ApplicationUser applicationUser) {
+	public Post(String postInfo, Set<Image> images, ApplicationUser applicationUser) {
 		super();
-		this.postCaption = postInfo;
+		this.postInfo = postInfo;
 		this.applicationUser = applicationUser;
-		this.postImage = postImage;
+		this.images = images;
 	}
 
 	public long getPostId() {
@@ -59,11 +71,11 @@ public class Post {
 	}
 
 	public String getPostInfo() {
-		return postCaption;
+		return postInfo;
 	}
 
 	public void setPostInfo(String postInfo) {
-		this.postCaption = postInfo;
+		this.postInfo = postInfo;
 	}
 
 	public long getNumLikes() {
@@ -90,12 +102,25 @@ public class Post {
 		this.vestimonials = vestimonials;
 	}
 
-	public byte[] getPostImage() {
-		return postImage;
+
+	public LocalDateTime getCreateDateTime() {
+		return createDateTime;
 	}
 
-	public void setPostImage(byte[] postImage) {
-		this.postImage = postImage;
+	public void setCreateDateTime(LocalDateTime createDateTime) {
+		this.createDateTime = createDateTime;
 	}
+
+	public Set<Image> getImages() {
+		return images;
+	}
+
+	public void setImages(Set<Image> images) {
+		this.images = images;
+	}
+	
+	
+	
+	
 
 }

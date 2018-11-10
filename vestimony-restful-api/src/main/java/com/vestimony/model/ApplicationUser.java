@@ -180,7 +180,7 @@ public class ApplicationUser implements Serializable {
 	public void setPosts(Set<Post> posts) {
 		this.posts = posts;
 	}
-
+	@JsonIgnore
 	public Set<ApplicationUser> getFollowing() {
 		return following;
 	}

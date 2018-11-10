@@ -29,6 +29,7 @@ public class Vestimonial implements Serializable  {
 	@ManyToOne
 	@JoinColumn(name = "FkItemId")
 	private Item item;
+	
 	@ManyToOne
 	@JoinColumn(name = "FkApplicationUser")
 	private ApplicationUser applicationUser;
