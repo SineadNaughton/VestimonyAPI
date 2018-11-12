@@ -80,7 +80,7 @@ public class FollowService {
 		//list of post
 		List<Post> followedPosts =new ArrayList<>();
 		for(ApplicationUser followed: following) {
-			postRepository.findFirst2ByApplicationUserOrderByCreateDateTimeDesc(followed).forEach(followedPosts::add);
+			postRepository.findByApplicationUserOrderByCreateDateTimeDesc(followed).forEach(followedPosts::add);
 		}
 		
 		return followedPosts;

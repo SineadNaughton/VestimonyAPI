@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Image {
 
@@ -26,6 +28,7 @@ public class Image {
 	private String imageType;
 	
 	@Lob
+	@Column(length=1000000)
     private byte[] pic;
 	
 	@ManyToOne
@@ -47,22 +50,17 @@ public class Image {
 		this.imageName = imageName;
 	}
 
-	public Image(String imageName, String imageType, byte[] pic) {
+	public Image(String imageName, String imageType, byte[] pic, Post post) {
 		super();
 		this.imageName = imageName;
 		this.imageType = imageType;
 		this.pic = pic;
+		this.post=post;
 	}
 	
 	
 
-	public Image(Long imageId, String imageName, String imageType, byte[] pic) {
-		super();
-		this.imageId = imageId;
-		this.imageName = imageName;
-		this.imageType = imageType;
-		this.pic = pic;
-	}
+
 
 	public Long getImageId() {
 		return imageId;
@@ -87,7 +85,7 @@ public class Image {
 	public void setImageType(String imageType) {
 		this.imageType = imageType;
 	}
-
+	@JsonIgnore
 	public byte[] getPic() {
 		return pic;
 	}

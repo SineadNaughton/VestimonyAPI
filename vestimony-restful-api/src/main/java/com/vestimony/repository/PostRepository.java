@@ -12,5 +12,5 @@ import com.vestimony.model.Post;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
 	
-	List<Post> findFirst2ByApplicationUserOrderByCreateDateTimeDesc(ApplicationUser followed);
+	List<Post> findByApplicationUserOrderByCreateDateTimeDesc(ApplicationUser followed);
 }

@@ -61,6 +61,16 @@ public class ApplicationUser implements Serializable {
 			@JoinColumn(name = "following") })
 	private Set<ApplicationUser> following = new HashSet<ApplicationUser>();
 
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "likedPosts", joinColumns = { @JoinColumn(name = "userThatLikes") }, inverseJoinColumns = {
+			@JoinColumn(name = "postLiked") })
+	private Set<Post> likedPost = new HashSet<Post>();
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "savedItems", joinColumns = { @JoinColumn(name = "userThatSaved") }, inverseJoinColumns = {
+			@JoinColumn(name = "itemSaved") })
+	private Set<Item> savedItems = new HashSet<Item>();
+
 	// constructors
 
 	public ApplicationUser() {
@@ -180,6 +190,7 @@ public class ApplicationUser implements Serializable {
 	public void setPosts(Set<Post> posts) {
 		this.posts = posts;
 	}
+
 	@JsonIgnore
 	public Set<ApplicationUser> getFollowing() {
 		return following;
@@ -187,6 +198,24 @@ public class ApplicationUser implements Serializable {
 
 	public void setFollowing(Set<ApplicationUser> following) {
 		this.following = following;
+	}
+
+	@JsonIgnore
+	public Set<Post> getLikedPost() {
+		return likedPost;
+	}
+
+	public void setLikedPost(Set<Post> likedPost) {
+		this.likedPost = likedPost;
+	}
+	
+	@JsonIgnore
+	public Set<Item> getSavedItems() {
+		return savedItems;
+	}
+
+	public void setSavedItems(Set<Item> savedItems) {
+		this.savedItems = savedItems;
 	}
 	
 	

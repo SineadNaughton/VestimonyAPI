@@ -2,13 +2,18 @@ package com.vestimony.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.vestimony.model.ApplicationUser;
 import com.vestimony.model.Item;
+import com.vestimony.repository.ApplicationUserRespository;
 import com.vestimony.repository.ItemRepository;
 
 @Service
@@ -16,6 +21,9 @@ public class ItemService {
 	
 	@Autowired
 	private ItemRepository itemRepository;
+	
+	@Autowired
+	private  ApplicationUserRespository applicationUserRepository;
 	
 	//search by name
 	public List<Item> search(String itemName){
@@ -30,6 +38,11 @@ public class ItemService {
 		List<Item> items = new ArrayList<>();
 		itemRepository.findByBrandLikeIgnoreCaseAndColourLikeIgnoreCase("%"+brand+"%", "%"+colour+"%").forEach(items::add);
 		return items;
+	}
+	
+	//find by id
+	public Item findById(long itemId) {
+		return itemRepository.findById(itemId).get();
 	}
 	
 
@@ -68,6 +81,7 @@ public class ItemService {
 		itemRepository.findAll().forEach(items::add);
 		return items;
 	}
+
 	
 
 

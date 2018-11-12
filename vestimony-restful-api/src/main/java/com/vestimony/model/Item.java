@@ -12,6 +12,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -32,7 +34,9 @@ public class Item implements Serializable {
 	private String brand;
 	@Column(unique = true)
 	private String url;
-	private String image;
+	private String imageUrl;
+	@Lob
+	private byte[] pic;
 	private String category;
 	private int sizeAdjustment;
 	private int rating;
@@ -47,38 +51,33 @@ public class Item implements Serializable {
 	
 	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Image> images = new HashSet<Image>();
+	
+	
+	@ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                CascadeType.PERSIST,
+                CascadeType.MERGE
+            },
+            mappedBy = "savedItems")
+	private Set<ApplicationUser> saves = new HashSet<ApplicationUser>();
 
 	public Item() {
 		super();
 	}
 
-	public Item(String name, String colour, double price, String brand, String url, String image, String category) {
+	public Item(String name, String colour, double price, String brand, String url, String imageUrl, String category, byte[] pic) {
 		super();
 		this.name = name;
 		this.colour = colour;
 		this.price = price;
 		this.brand = brand;
 		this.url = url;
-		this.image = image;
+		this.imageUrl = imageUrl;
 		this.category=category;
+		this.pic=pic;
 	}
 
-	public Item(long itemId, String name, String colour, double price, String brand, String url, String image,
-			String category, int sizeAdjustment, int rating, long numReviews, long numSaved) {
-		super();
-		this.itemId = itemId;
-		this.name = name;
-		this.colour = colour;
-		this.price = price;
-		this.brand = brand;
-		this.url = url;
-		this.image = image;
-		this.category = category;
-		this.sizeAdjustment = sizeAdjustment;
-		this.rating = rating;
-		this.numReviews = numReviews;
-		this.numSaved = numSaved;
-	}
+
 
 	public long getItemId() {
 		return itemId;
@@ -126,14 +125,6 @@ public class Item implements Serializable {
 
 	public void setUrl(String url) {
 		this.url = url;
-	}
-
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
 	}
 
 	public String getCategory() {
@@ -193,6 +184,40 @@ public class Item implements Serializable {
 	public void setVestimonials(Set<Vestimonial> vestimonials) {
 		this.vestimonials = vestimonials;
 	}
+
+	public byte[] getPic() {
+		return pic;
+	}
+
+	public void setPic(byte[] pic) {
+		this.pic = pic;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public Set<Image> getImages() {
+		return images;
+	}
+
+	public void setImages(Set<Image> images) {
+		this.images = images;
+	}
+
+	public Set<ApplicationUser> getSaves() {
+		return saves;
+	}
+
+	public void setSaves(Set<ApplicationUser> saves) {
+		this.saves = saves;
+	}
+	
+	
 	
 	
 

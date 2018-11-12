@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vestimony.model.ApplicationUser;
+import com.vestimony.model.Post;
 import com.vestimony.model.UserProfile;
 
 import com.vestimony.service.ApplicationUserService;
@@ -34,6 +36,14 @@ public class ApplicationUserController {
 	private ApplicationUserService applicationUserService;
 	@Autowired
 	private UserProfileService userProfileService;
+
+	// get current user
+	@GetMapping("/currentuser")
+	public ResponseEntity<ApplicationUser> getCuurentUser() {
+		ApplicationUser applicationUser = applicationUserService.getCurrentnUser();
+		return new ResponseEntity<ApplicationUser>(applicationUser, HttpStatus.OK);
+
+	}
 
 	// get all users
 	@GetMapping
@@ -55,49 +65,64 @@ public class ApplicationUserController {
 
 	// get all profiles to view / or by name
 	@GetMapping("/profiles")
-	public ResponseEntity<List<UserProfile>> getAllUserProfiles(@RequestParam(value ="username", defaultValue="") String username) {
+	public ResponseEntity<List<UserProfile>> getAllUserProfiles(
+			@RequestParam(value = "username", defaultValue = "") String username) {
 		List<ApplicationUser> applicationUsers = new ArrayList<>();
-		if(username=="") {
+		if (username == "") {
 			applicationUsers = applicationUserService.getAllApplicationUsers();
-			
-		}
-		else {
+
+		} else {
 			applicationUsers = applicationUserService.findApplicationUserByUsername(username);
-			
+
 		}
 		List<UserProfile> userProfiles = userProfileService.getAllUserProfiles(applicationUsers);
 		return new ResponseEntity<List<UserProfile>>(userProfiles, HttpStatus.OK);
-		
+
+	}
+
+	// create
+	@PostMapping(value = "/signup")
+	@CrossOrigin
+	public ResponseEntity<ApplicationUser> addUser(@RequestBody ApplicationUser applicationUser) {
+		System.out.println(applicationUser);
+		applicationUserService.addApplicationUser(applicationUser);
+		return new ResponseEntity<ApplicationUser>(applicationUser, HttpStatus.OK);
+	}
+
+	// save item
+	// like post
+	@GetMapping(value = "/saveitem/{itemId}", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> saveItem(@PathVariable long itemId) {
+		String resp = applicationUserService.saveItem(itemId);
+		// add to users liked posts
+
+		return new ResponseEntity<String>(resp, HttpStatus.OK);
+	}
+
+	// unsave item
+	@GetMapping("/unsaveitem/{itemId}")
+	public ResponseEntity<String> unsaveItem(@PathVariable long itemId) {
+		String resp = applicationUserService.unsaveItem(itemId);
+		// add to users liked posts
+
+		return new ResponseEntity<String>(resp, HttpStatus.OK);
+	}
+
+	// show saved items
+	@GetMapping(value = "/issaved/{itemId}")
+	public ResponseEntity<Boolean> isItemSaved(@PathVariable long itemId) {
+		boolean isLiked = applicationUserService.isItemSaved(itemId);
+		// add to users liked posts
+
+		return new ResponseEntity<Boolean>(isLiked, HttpStatus.OK);
 	}
 	
-	// create
-		@PostMapping(value = "/signup")
-		@CrossOrigin
-		public ResponseEntity<ApplicationUser> addUser(@RequestBody ApplicationUser applicationUser) {
-			System.out.println(applicationUser);
-			applicationUserService.addApplicationUser(applicationUser);
-			return new ResponseEntity<ApplicationUser>(applicationUser, HttpStatus.OK);
-		}
+	//get liked posts
+	
+	@GetMapping(value="/likedposts")
+	public ResponseEntity<List<Post>> getLikedPosts() {
+		List<Post> posts = applicationUserService.getLikedPosts();
+		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
+	}
 
-	
-	
-	
-
-	/*
-	 * OLD ALL METHOD //get all profiles
-	 * 
-	 * @RequestMapping("/vestimony/users") public List<ApplicationUser>
-	 * getAllUsers() {
-	 * System.out.println(SecurityContextHolder.getContext().getAuthentication());
-	 * return applicationUserService.getAllApplicationUsers(); }
-	 * 
-	 * OLD GET ONE PROFILE METHOD
-	 * 
-	 * @GetMapping("/{userId}/profiles") public UserProfile
-	 * getUserProfile(@PathVariable long userId) { Optional<ApplicationUser> appUser
-	 * = applicationUserService.getApplicationUser(userId); if (appUser.isPresent())
-	 * return userProfileService.getUserProfile(appUser.get()); return null; }
-	 */
-
-	
 }

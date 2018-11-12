@@ -10,13 +10,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.vestimony.model.ApplicationUser;
 import com.vestimony.model.Post;
+import com.vestimony.model.Vestimonial;
 import com.vestimony.service.ImageService;
 import com.vestimony.service.PostService;
 
@@ -31,10 +34,10 @@ public class PostController {
 	private ImageService imageService;
 	
 	//image upload
-	@PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+	@PostMapping(value = "{postId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
-	public String handlerFileUpload(@RequestParam("file") MultipartFile file) throws IOException {
-		imageService.createImage(file);
+	public String handlerFileUpload(@PathVariable long postId, @RequestParam("file") MultipartFile file) throws IOException {
+		imageService.createImage(file, postId);
 		return "Sucess"+ file.getOriginalFilename();
 	}
 	
@@ -43,15 +46,14 @@ public class PostController {
 	public byte[] getImage(@PathVariable long imageId) {
 		return imageService.getImage(imageId).getPic();
 	}
-/*
+
 	// create
 	@PostMapping
-	@ResponseBody
-	public ResponseEntity<Post> createPost(@RequestBody Post post) {
+	public ResponseEntity<Post> createPost(@RequestBody Post post) throws IOException {
 		postService.createPost(post);
 		return new ResponseEntity<Post>(post, HttpStatus.OK);
 	}
-*/
+	
 	// view all posts
 	@GetMapping
 	public ResponseEntity<List<Post>> getAllPosts() {
@@ -65,6 +67,34 @@ public class PostController {
 		Post post = postService.getPost(postId).get();
 		return new ResponseEntity<Post>(post, HttpStatus.OK);
 	}
+	
+	//like post
+	@GetMapping(value="/{postId}/like", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> likePost(@PathVariable long postId) {
+		String resp = postService.likePost(postId);
+		//add to users liked posts
+		
+		return new ResponseEntity<String>(resp, HttpStatus.OK);
+	}
+	
+	//unlike
+	@GetMapping("/{postId}/unlike")
+	public ResponseEntity<String> unlikePost(@PathVariable long postId) {
+		String resp = postService.unlikePost(postId);
+		//add to users liked posts
+		
+		return new ResponseEntity<String>(resp, HttpStatus.OK);
+	}
+	
+	//show liked
+	@GetMapping(value="/{postId}/isliked")
+	public ResponseEntity<Boolean> islikedPost(@PathVariable long postId) {
+		boolean isLiked = postService.islikedPost(postId);
+		//add to users liked posts
+		
+		return new ResponseEntity<Boolean>(isLiked, HttpStatus.OK);
+	}
+	
 
 
 }

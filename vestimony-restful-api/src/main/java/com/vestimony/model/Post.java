@@ -20,6 +20,8 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Post {
 	@Id
@@ -49,17 +51,30 @@ public class Post {
 	
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Image> images = new HashSet<Image>();
+	
+	
+	
+	@ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                CascadeType.PERSIST,
+                CascadeType.MERGE
+            },
+            mappedBy = "likedPost")
+	private Set<ApplicationUser> likes = new HashSet<ApplicationUser>();
+	
+	
+	
 
 
 	public Post() {
 		super();
 	}
 
-	public Post(String postInfo, Set<Image> images, ApplicationUser applicationUser) {
+	public Post(String postInfo, ApplicationUser applicationUser) {
 		super();
 		this.postInfo = postInfo;
 		this.applicationUser = applicationUser;
-		this.images = images;
+
 	}
 
 	public long getPostId() {
@@ -110,7 +125,7 @@ public class Post {
 	public void setCreateDateTime(LocalDateTime createDateTime) {
 		this.createDateTime = createDateTime;
 	}
-
+	
 	public Set<Image> getImages() {
 		return images;
 	}
@@ -118,6 +133,16 @@ public class Post {
 	public void setImages(Set<Image> images) {
 		this.images = images;
 	}
+
+	public Set<ApplicationUser> getLikes() {
+		return likes;
+	}
+
+	public void setLikes(Set<ApplicationUser> likes) {
+		this.likes = likes;
+	}
+	
+	
 	
 	
 	
