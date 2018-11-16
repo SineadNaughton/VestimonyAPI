@@ -132,4 +132,19 @@ public class ApplicationUserService {
 		
 	}
 
+	public List<Item> getSavedItems() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
+		Set<Item> savedItems = user.getSavedItems();
+		 List<Item> items = new ArrayList<Item>(savedItems);
+		 return items;
+	}
+
+	public List<Post> getPostsForPorifle(long userId) {
+		ApplicationUser user = applicationUserRepository.findById(userId).get();
+		List<Post> posts = new ArrayList<>(user.getPosts());
+		return posts;
+		
+	}
+
 }

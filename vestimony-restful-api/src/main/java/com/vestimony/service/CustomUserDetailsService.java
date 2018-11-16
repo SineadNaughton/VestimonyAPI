@@ -30,10 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 		 return user;
 	}
 
-	//gets details from db
-	//public ApplicationUser loadApplicationUserByUsername(String username) {
-	//	return new ApplicationUser ("batman", "pass5", "sinead@gmail.com");
-	//}
 	
 	public ApplicationUser loadApplicationUserByUsername(String username) {
 		return applicationUserRespository.findByUsername(username);

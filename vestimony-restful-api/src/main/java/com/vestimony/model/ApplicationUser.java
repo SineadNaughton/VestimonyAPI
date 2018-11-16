@@ -25,29 +25,22 @@ public class ApplicationUser implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "UserID", unique = true)
+	@Column(unique = true)
 	private long userId;
 
-	@Column(name = "Username", unique = true, nullable = false)
+	@Column(unique = true, nullable = false)
 	private String username;
 
-	@Column(name = "password", nullable = false)
+	@Column(nullable = false)
 	private String password;
 
-	@Column(name = "Email", unique = true, nullable = false)
+	@Column(unique = true, nullable = false)
 	private String email;
-	// @Column(name = "RoleAdmin")
-	// private boolean roleAdmin;
-	@Column(name = "Height")
-	private int height;
-
-	@Column(name = "SizeTop")
+	private String role;
+	private int heightFeet;	
+	private int heightInches;	
 	private int sizeTop;
-
-	@Column(name = "SizeBottom")
 	private int sizeBottom;
-
-	@Column(name = "Bio")
 	private String bio;
 
 	@OneToMany(mappedBy = "applicationUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -76,13 +69,14 @@ public class ApplicationUser implements Serializable {
 	public ApplicationUser() {
 	}
 
-	public ApplicationUser(String username, String password, String email, int height, int sizeTop, int sizeBottom,
+	public ApplicationUser(String username, String password, String email, int heightFeet, int heightInches, int sizeTop, int sizeBottom,
 			String bio) {
 		super();
 		this.username = username;
 		this.password = password;
 		this.email = email;
-		this.height = height;
+		this.heightFeet = heightFeet;
+		this.heightInches= heightInches;
 		this.sizeTop = sizeTop;
 		this.sizeBottom = sizeBottom;
 		this.bio = bio;
@@ -101,7 +95,7 @@ public class ApplicationUser implements Serializable {
 		this.username = username;
 		this.password = password;
 		this.email = email;
-		this.height = height;
+		this.heightFeet = height;
 		this.sizeTop = sizeTop;
 		this.sizeBottom = sizeBottom;
 		this.bio = bio;
@@ -110,11 +104,11 @@ public class ApplicationUser implements Serializable {
 	// methods
 
 	public int getHeight() {
-		return height;
+		return heightFeet;
 	}
 
 	public void setHeight(int height) {
-		this.height = height;
+		this.heightFeet = height;
 	}
 
 	public int getSizeTop() {

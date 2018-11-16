@@ -16,7 +16,7 @@ public interface VestimonialRepository extends JpaRepository<Vestimonial, Long> 
 	
 	List<Vestimonial> findByApplicationUser(long uerId);
 	
-	List<Vestimonial> findByItem(long itemId);
+	List<Vestimonial> findByItem(Item item);
 	
 	Optional<Vestimonial> findByApplicationUserAndItem(ApplicationUser user, Item item);
 

@@ -24,7 +24,7 @@ import com.vestimony.service.ImageService;
 import com.vestimony.service.PostService;
 
 @RestController
-@RequestMapping(value = "/vestimony/posts", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/vestimony/posts") //, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 public class PostController {
 
 	@Autowired
@@ -42,7 +42,7 @@ public class PostController {
 	}
 	
 	//image getter
-	@GetMapping(value = "/image/{imageId}/{imageName}", consumes = MediaType.ALL_VALUE, produces = MediaType.IMAGE_PNG_VALUE)
+	@GetMapping(value = "/image/{imageId}", consumes = MediaType.ALL_VALUE, produces = MediaType.IMAGE_PNG_VALUE)
 	public byte[] getImage(@PathVariable long imageId) {
 		return imageService.getImage(imageId).getPic();
 	}
@@ -78,7 +78,7 @@ public class PostController {
 	}
 	
 	//unlike
-	@GetMapping("/{postId}/unlike")
+	@GetMapping(value = "/{postId}/unlike", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> unlikePost(@PathVariable long postId) {
 		String resp = postService.unlikePost(postId);
 		//add to users liked posts
@@ -95,6 +95,15 @@ public class PostController {
 		return new ResponseEntity<Boolean>(isLiked, HttpStatus.OK);
 	}
 	
+	
+	//get posts for a paraticular item
+	@GetMapping(value="/foritem/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Post>> getPostsForItem(@PathVariable long itemId) {
+		List<Post> posts = postService.getPostsForItem(itemId);
+		//add to users liked posts
+		
+		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
+	}
 
 
 }

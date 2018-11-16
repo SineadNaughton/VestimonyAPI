@@ -2,6 +2,7 @@ package com.vestimony.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -17,6 +18,7 @@ import com.vestimony.model.Item;
 import com.vestimony.model.Post;
 import com.vestimony.model.Vestimonial;
 import com.vestimony.repository.ApplicationUserRespository;
+import com.vestimony.repository.ItemRepository;
 import com.vestimony.repository.PostRepository;
 import com.vestimony.repository.VestimonialRepository;
 
@@ -30,8 +32,11 @@ public class PostService {
 	private ApplicationUserRespository applicationUserRepository;
 	
 	@Autowired
-	private VestimonialRepository vestimonialRespository;
+	private VestimonialRepository vestimonialRepository;
 	
+	
+	@Autowired
+	private ItemRepository itemRepository;
 
 	
 	//create
@@ -134,6 +139,28 @@ public class PostService {
 		
 		return "Post unliked";
 	}
+
+	//move to vestimonials
+	public List<Post> getPostsForItem(long itemId) {
+		Item item = itemRepository.findById(itemId).get();
+		
+		List<Vestimonial> vestimonials = new ArrayList<>();
+		vestimonialRepository.findByItem(item).forEach(vestimonials::add);
+		
+		Set<Post> posts  = new HashSet<>();
+		for(Vestimonial v : vestimonials) {
+			posts.addAll(v.getPosts());
+		}
+		
+		List<Post> postsForItem = new ArrayList<>(posts);
+		return postsForItem;
+		
+		
+		
+	}
+	
+	
+
 
 
 	

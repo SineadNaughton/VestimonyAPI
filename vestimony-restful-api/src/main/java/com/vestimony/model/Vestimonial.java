@@ -15,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Vestimonial implements Serializable  {
 
@@ -136,5 +138,19 @@ public class Vestimonial implements Serializable  {
 	public void setApplicationUser(ApplicationUser applicationUser) {
 		this.applicationUser = applicationUser;
 	}
+
+
+	@JsonIgnore
+	public Set<Post> getPosts() {
+		return posts;
+	}
+
+
+
+	public void setPosts(Set<Post> posts) {
+		this.posts = posts;
+	}
+	
+	
 
 }

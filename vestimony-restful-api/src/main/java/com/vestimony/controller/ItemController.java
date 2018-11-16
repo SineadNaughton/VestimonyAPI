@@ -28,7 +28,7 @@ public class ItemController {
 	@Autowired
 	private ItemService itemService;
 
-	@GetMapping(value = "/search")
+	@GetMapping(value = "/search/items")
 	public ResponseEntity<List<Item>> search(@RequestParam("itemName") String itemName) {
 		List<Item> items = itemService.search(itemName);
 		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
@@ -51,12 +51,21 @@ public class ItemController {
 	}
 
 	// filter
-	@GetMapping(value = "/filter")
+	@GetMapping(value = "/filter/items")
 	public ResponseEntity<List<Item>> filter(@RequestParam(defaultValue="") String brand,
 			@RequestParam(defaultValue="") String colour) {
 		List<Item> items = itemService.findByBrandLikeAndColourLike(brand, colour);
 		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
 	}
+	
+	// get one
+		@GetMapping("/{itemId}")
+		public ResponseEntity<Item> getOne(@PathVariable long itemId) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			System.out.println(auth.getPrincipal());
+			Item item = itemService.findById(itemId);
+			return new ResponseEntity<Item>(item, HttpStatus.OK);
+		}
 
 	
 	

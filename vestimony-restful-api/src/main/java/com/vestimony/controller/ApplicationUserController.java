@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vestimony.model.ApplicationUser;
+import com.vestimony.model.Item;
 import com.vestimony.model.Post;
 import com.vestimony.model.UserProfile;
 
@@ -53,7 +54,7 @@ public class ApplicationUserController {
 	}
 
 	// get one profile to view
-	@GetMapping("/{userId}/profiles")
+	@GetMapping("/profiles/{userId}")
 	public ResponseEntity<UserProfile> getUserProfile(@PathVariable long userId) {
 		Optional<ApplicationUser> applicationUser = applicationUserService.getApplicationUser(userId);
 		if (applicationUser.isPresent()) {
@@ -100,7 +101,7 @@ public class ApplicationUserController {
 	}
 
 	// unsave item
-	@GetMapping("/unsaveitem/{itemId}")
+	@GetMapping(value = "/unsaveitem/{itemId}", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> unsaveItem(@PathVariable long itemId) {
 		String resp = applicationUserService.unsaveItem(itemId);
 		// add to users liked posts
@@ -108,7 +109,7 @@ public class ApplicationUserController {
 		return new ResponseEntity<String>(resp, HttpStatus.OK);
 	}
 
-	// show saved items
+	// is item saved
 	@GetMapping(value = "/issaved/{itemId}")
 	public ResponseEntity<Boolean> isItemSaved(@PathVariable long itemId) {
 		boolean isLiked = applicationUserService.isItemSaved(itemId);
@@ -117,11 +118,26 @@ public class ApplicationUserController {
 		return new ResponseEntity<Boolean>(isLiked, HttpStatus.OK);
 	}
 	
+	//get saved items
+	@GetMapping(value="/saveditems")
+	public ResponseEntity<List<Item>> getSavedItems() {
+		List<Item> items = applicationUserService.getSavedItems();
+		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+	}
+	
+	
 	//get liked posts
 	
 	@GetMapping(value="/likedposts")
 	public ResponseEntity<List<Post>> getLikedPosts() {
 		List<Post> posts = applicationUserService.getLikedPosts();
+		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
+	}
+	
+	//get posts created by user
+	@GetMapping(value="/profile/{userId}/posts")
+	public ResponseEntity<List<Post>> getPostsForProfile(@PathVariable long userId){
+		List<Post> posts = applicationUserService.getPostsForPorifle(userId);
 		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
 	}
 
