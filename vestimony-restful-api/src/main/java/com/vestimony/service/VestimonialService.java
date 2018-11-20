@@ -36,57 +36,66 @@ public class VestimonialService {
 	private PostRepository postRepository;
 
 	// create new --add post to this
-	public Vestimonial createVestimonial(Vestimonial vestimonial, long itemId, long postId) {
-		// set user
+	public String createVestimonial(Vestimonial vestimonial, long postId, long itemId) {
+		// get user and item
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
-		vestimonial.setApplicationUser(user);
-		// set item
 		Item item = itemRepository.findById(itemId).get();
+		
+		vestimonial.setApplicationUser(user);
 		vestimonial.setItem(item);
 		
 		// check if exists
 		if (!vestimonialRepository.findByApplicationUserAndItem(user, item).isPresent()) {
 
 			// associate with post
+			vestimonialRepository.save(vestimonial);
+			
 			Post post = postRepository.findById(postId).get();
 			Set<Vestimonial> vestimonials = post.getVestimonials();
 			vestimonials.add(vestimonial);
 			post.setVestimonials(vestimonials);
 			postRepository.save(post);
-			vestimonialRepository.save(vestimonial);
-
+			
+			
 			// update item rating
-
 			int vestimonialRating = vestimonial.getRating();
 			int overallRating = item.getRating();
 			long numberReviews = item.getNumReviews();
 			int total = (int) numberReviews * overallRating;
-			item.setNumReviews(item.getNumReviews() + 1);
-			numberReviews++;
-			int newRating = (total + vestimonialRating) / (int) numberReviews;
-			//save item
+			int newRating = (total + vestimonialRating) / ((int) numberReviews+1);
 			item.setRating(newRating);
+			
+			int adjustment = vestimonial.getSizeBought() - vestimonial.getUsualSize();
+			int adjustmentCurrentlyRecommended = item.getSizeAdjustment() * (int)numberReviews;
+			int newRecommendedAdjustment = (adjustmentCurrentlyRecommended + adjustment) /((int) numberReviews+1);
+			item.setSizeAdjustment(newRecommendedAdjustment);
+			item.setNumReviews(numberReviews++);
+			
+			
+			
+			
+			//save item
 			itemRepository.save(item);
-			return vestimonial;
+			return "vestimonial created";
 		}
 		else {
 			Vestimonial vestimonalExists = vestimonialRepository.findByApplicationUserAndItem(user, item).get();
-			return vestimonalExists;
+			return "vestimonials exists fro this item";  //link vestimonial
 		}
 		
 	}
 
 
 	// link
-	public Vestimonial linkVestimonialToPost(long postId, long vestimonialId) {
+	public String linkVestimonialToPost(long postId, long vestimonialId) {
 		Post post = postRepository.findById(postId).get();
 		Vestimonial vestimonial = vestimonialRepository.findById(vestimonialId).get();
 		Set<Vestimonial> vestimonials = post.getVestimonials();
 		vestimonials.add(vestimonial);
 		post.setVestimonials(vestimonials);
 		postRepository.save(post);
-		return vestimonial;
+		return "Sucessfully linked";
 	}
 
 	
@@ -106,6 +115,12 @@ public class VestimonialService {
 		
 		Item item = itemRepository.findById(itemId).get();
 		return vestimonialRepository.findByApplicationUserAndItem(user, item);
+	}
+
+
+	public Vestimonial findById(long vestimonialId) {
+		Vestimonial vestimonial = vestimonialRepository.findById(vestimonialId).get();
+		return vestimonial;
 	}
 
 

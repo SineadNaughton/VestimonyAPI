@@ -18,7 +18,7 @@ public class WebCrawlerController {
 	@RequestMapping(value="/vestimony/webcrawler", consumes = "application/json", produces = "application/json")
 	public void webCrawler() throws UnirestException, IOException {
 		webCrawlerService.crawlTopShopNewIn();
-		//webCrawlerService.crawlAsosNewIn();
+		webCrawlerService.crawlAsosNewIn();
 	}
 
 }

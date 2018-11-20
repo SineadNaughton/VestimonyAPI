@@ -1,6 +1,7 @@
 package com.vestimony.model;
 
 import java.io.Serializable;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,13 +16,14 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-
+@Table
 public class Item implements Serializable {
 
 	@Id
@@ -34,8 +36,9 @@ public class Item implements Serializable {
 	private String brand;
 	@Column(unique = true)
 	private String url;
-	private String imageUrl;
+	//private String imageUrl;
 	@Lob
+	@Column(length=1000000)
 	private byte[] pic;
 	private String category;
 	private int sizeAdjustment;
@@ -44,14 +47,10 @@ public class Item implements Serializable {
 	private long numSaved;
 	@Column
 	@CreationTimestamp
-	private LocalDateTime createDateTime;
+	private LocalDateTime createdDateTime;
 	
 	@OneToMany(mappedBy="item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Vestimonial> vestimonials = new HashSet<Vestimonial>();
-	
-	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<Image> images = new HashSet<Image>();
-	
 	
 	@ManyToMany(fetch = FetchType.LAZY,
             cascade = {
@@ -65,14 +64,13 @@ public class Item implements Serializable {
 		super();
 	}
 
-	public Item(String name, String colour, double price, String brand, String url, String imageUrl, String category, byte[] pic) {
+	public Item(String name, String colour, double price, String brand, String url, String category, byte[] pic) {
 		super();
 		this.name = name;
 		this.colour = colour;
 		this.price = price;
 		this.brand = brand;
 		this.url = url;
-		this.imageUrl = imageUrl;
 		this.category=category;
 		this.pic=pic;
 	}
@@ -169,13 +167,6 @@ public class Item implements Serializable {
 		this.numSaved = numSaved;
 	}
 
-	public LocalDateTime getCreateDateTime() {
-		return createDateTime;
-	}
-
-	public void setCreateDateTime(LocalDateTime createDateTime) {
-		this.createDateTime = createDateTime;
-	}
 	@JsonIgnore
 	public Set<Vestimonial> getVestimonials() {
 		return vestimonials;
@@ -193,21 +184,6 @@ public class Item implements Serializable {
 		this.pic = pic;
 	}
 
-	public String getImageUrl() {
-		return imageUrl;
-	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-
-	public Set<Image> getImages() {
-		return images;
-	}
-
-	public void setImages(Set<Image> images) {
-		this.images = images;
-	}
 
 	public Set<ApplicationUser> getSaves() {
 		return saves;
@@ -216,6 +192,18 @@ public class Item implements Serializable {
 	public void setSaves(Set<ApplicationUser> saves) {
 		this.saves = saves;
 	}
+
+	public LocalDateTime getCreatedDateTime() {
+		return createdDateTime;
+	}
+
+	public void setCreatedDateTime(LocalDateTime createdDateTime) {
+		this.createdDateTime = createdDateTime;
+	}
+
+
+	
+	
 	
 	
 	

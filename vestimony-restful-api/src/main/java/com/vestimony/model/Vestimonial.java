@@ -1,6 +1,7 @@
 package com.vestimony.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,20 +15,30 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
+@Table
 public class Vestimonial implements Serializable  {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(unique = true)
-	private long vestimonyId;
+	private long vestimonialId;
 	private String comments;
 	private int sizeBought;
-	private int qualityForPriceRating;
+	private int usualSize;
 	private int rating;
+	
+	@Column
+	@CreationTimestamp
+	private LocalDateTime createdDateTime;
+	
+	
 	@ManyToOne
 	@JoinColumn(name = "FkItemId")
 	private Item item;
@@ -52,44 +63,17 @@ public class Vestimonial implements Serializable  {
 		super();
 	}
 	
-	
 
-	public Vestimonial(long vestimonyId, String comments, int sizeBought, int qualityForPriceRating, int rating,
-			Item item, ApplicationUser applicationUser) {
-		super();
-		this.vestimonyId = vestimonyId;
-		this.comments = comments;
-		this.sizeBought = sizeBought;
-		this.qualityForPriceRating = qualityForPriceRating;
-		this.rating = rating;
-		this.item = item;
-		this.applicationUser = applicationUser;
-	}
-	
-	
-
-
-
-	public Vestimonial(String comments, int sizeBought, int qualityForPriceRating, int rating, Item item,
-			ApplicationUser applicationUser) {
+	public Vestimonial(String comments, int sizeBought, int usualSize, int rating) {
 		super();
 		this.comments = comments;
 		this.sizeBought = sizeBought;
-		this.qualityForPriceRating = qualityForPriceRating;
+		this.usualSize=usualSize;
 		this.rating = rating;
-		this.item = item;
-		this.applicationUser = applicationUser;
+		
 	}
 
 
-
-	public long getVestimonyId() {
-		return vestimonyId;
-	}
-
-	public void setVestimonyId(long vestimonyId) {
-		this.vestimonyId = vestimonyId;
-	}
 
 	public String getComments() {
 		return comments;
@@ -105,14 +89,6 @@ public class Vestimonial implements Serializable  {
 
 	public void setSizeBought(int sizeBought) {
 		this.sizeBought = sizeBought;
-	}
-
-	public int getQualityForPriceRating() {
-		return qualityForPriceRating;
-	}
-
-	public void setQualityForPriceRating(int qualityForPriceRating) {
-		this.qualityForPriceRating = qualityForPriceRating;
 	}
 
 	public int getRating() {
@@ -150,6 +126,44 @@ public class Vestimonial implements Serializable  {
 	public void setPosts(Set<Post> posts) {
 		this.posts = posts;
 	}
+
+
+
+	public LocalDateTime getCreatedDateTime() {
+		return createdDateTime;
+	}
+
+
+
+	public void setCreatedDateTime(LocalDateTime createdDateTime) {
+		this.createdDateTime = createdDateTime;
+	}
+
+
+
+	public long getVestimonialId() {
+		return vestimonialId;
+	}
+
+
+
+	public void setVestimonialId(long vestimonialId) {
+		this.vestimonialId = vestimonialId;
+	}
+
+
+
+	public int getUsualSize() {
+		return usualSize;
+	}
+
+
+
+	public void setUsualSize(int usualSize) {
+		this.usualSize = usualSize;
+	}
+	
+	
 	
 	
 

@@ -30,6 +30,12 @@ public class ImageService {
 	public Image getImage(long imageId) {
 		return imageRepository.findById(imageId).get();
 	}
+	
+	public Image getImageForPost(long postId) {
+		Post post = postRepository.findById(postId).get();
+		 Image image = imageRepository.findFirstByPost(post);
+		 return image;
+	}
 
 	public void createImage(MultipartFile file, long postId) throws IOException {
 		Post post = postRepository.findById(postId).get();

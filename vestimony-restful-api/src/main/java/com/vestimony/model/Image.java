@@ -8,10 +8,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
+@Table
 public class Image {
 
 	
@@ -34,16 +36,11 @@ public class Image {
 	@ManyToOne
 	@JoinColumn(name = "FkPost")
 	private Post post;
-	
-	@ManyToOne
-	@JoinColumn(name = "FkItem")
-	private Item item;
+
 
 	public Image() {
 		super();
 	}
-	
-	
 
 	public Image(String imageName) {
 		super();

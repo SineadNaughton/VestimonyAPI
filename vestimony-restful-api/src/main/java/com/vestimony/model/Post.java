@@ -17,12 +17,14 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
+@Table
 public class Post {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,17 +35,15 @@ public class Post {
 
 	private long numLikes;
 
-
-	
 	@Column
 	@CreationTimestamp
-	private LocalDateTime createDateTime;
+	private LocalDateTime createdDateTime;
 
 	@ManyToOne
 	@JoinColumn(name = "FkApplicationUser")
 	private ApplicationUser applicationUser;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToMany(fetch = FetchType.LAZY )
 	@JoinTable(name = "Post_Vestimonial_Link", joinColumns = { @JoinColumn(name = "postId") }, inverseJoinColumns = {
 			@JoinColumn(name = "vestimonialId") })
 	private Set<Vestimonial> vestimonials = new HashSet<Vestimonial>();
@@ -116,16 +116,15 @@ public class Post {
 	public void setVestimonials(Set<Vestimonial> vestimonials) {
 		this.vestimonials = vestimonials;
 	}
-
-
-	public LocalDateTime getCreateDateTime() {
-		return createDateTime;
-	}
-
-	public void setCreateDateTime(LocalDateTime createDateTime) {
-		this.createDateTime = createDateTime;
-	}
 	
+	public LocalDateTime getCreatedDateTime() {
+		return createdDateTime;
+	}
+
+	public void setCreatedDateTime(LocalDateTime createdDateTime) {
+		this.createdDateTime = createdDateTime;
+	}
+
 	public Set<Image> getImages() {
 		return images;
 	}

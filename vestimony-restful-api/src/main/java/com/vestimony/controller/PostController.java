@@ -34,7 +34,7 @@ public class PostController {
 	private ImageService imageService;
 	
 	//image upload
-	@PostMapping(value = "{postId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+	@PostMapping(value = "/image/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
 	public String handlerFileUpload(@PathVariable long postId, @RequestParam("file") MultipartFile file) throws IOException {
 		imageService.createImage(file, postId);
@@ -42,9 +42,9 @@ public class PostController {
 	}
 	
 	//image getter
-	@GetMapping(value = "/image/{imageId}", consumes = MediaType.ALL_VALUE, produces = MediaType.IMAGE_PNG_VALUE)
-	public byte[] getImage(@PathVariable long imageId) {
-		return imageService.getImage(imageId).getPic();
+	@GetMapping(value = "/image/{postId}", consumes = MediaType.ALL_VALUE, produces = MediaType.IMAGE_PNG_VALUE)
+	public byte[] getImageForPost(@PathVariable long postId) {
+		return imageService.getImageForPost(postId).getPic();
 	}
 
 	// create
@@ -104,6 +104,17 @@ public class PostController {
 		
 		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
 	}
+	
+	//get trending
+	@GetMapping(value="/trending", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Post>> getTrending() {
+		List<Post> posts = postService.getTrending();
+		//add to users liked posts
+		
+		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
+	}
+	
+
 
 
 }

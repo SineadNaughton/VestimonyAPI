@@ -1,6 +1,8 @@
 package com.vestimony.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import javax.persistence.JoinColumn;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,14 +15,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-
+@Table
 public class ApplicationUser implements Serializable {
 
 	@Id
@@ -42,6 +48,16 @@ public class ApplicationUser implements Serializable {
 	private int sizeTop;
 	private int sizeBottom;
 	private String bio;
+	private long numFollowers;
+	
+	@Column
+	@CreationTimestamp
+	private LocalDateTime createdDateTime;
+	
+	
+	@Lob
+	@Column(length=1000000)
+	private byte[] pic;
 
 	@OneToMany(mappedBy = "applicationUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Vestimonial> vestimonials = new HashSet<Vestimonial>();
@@ -49,6 +65,8 @@ public class ApplicationUser implements Serializable {
 	@OneToMany(mappedBy = "applicationUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Post> posts = new HashSet<Post>();
 
+	
+	//following, liked, saved
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "following", joinColumns = { @JoinColumn(name = "follower") }, inverseJoinColumns = {
 			@JoinColumn(name = "following") })
@@ -65,7 +83,6 @@ public class ApplicationUser implements Serializable {
 	private Set<Item> savedItems = new HashSet<Item>();
 
 	// constructors
-
 	public ApplicationUser() {
 	}
 
@@ -80,35 +97,30 @@ public class ApplicationUser implements Serializable {
 		this.sizeTop = sizeTop;
 		this.sizeBottom = sizeBottom;
 		this.bio = bio;
+		this.role = "USER";
 	}
 
-	public ApplicationUser(String username, String password, String email) {
-		this.username = username;
-		this.password = password;
-		this.email = email;
-	}
 
-	public ApplicationUser(long userId, String username, String password, String email, int height, int sizeTop,
-			int sizeBottom, String bio) {
-		super();
-		this.userId = userId;
-		this.username = username;
-		this.password = password;
-		this.email = email;
-		this.heightFeet = height;
-		this.sizeTop = sizeTop;
-		this.sizeBottom = sizeBottom;
-		this.bio = bio;
-	}
+
+
 
 	// methods
 
-	public int getHeight() {
+	public int getHeightFeet() {
 		return heightFeet;
 	}
 
-	public void setHeight(int height) {
-		this.heightFeet = height;
+	public void setHeightFeet(int heightFeet) {
+		this.heightFeet = heightFeet;
+	}
+	
+
+	public int getHeightInches() {
+		return heightInches;
+	}
+
+	public void setHeightInches(int heightInches) {
+		this.heightInches = heightInches;
 	}
 
 	public int getSizeTop() {
@@ -166,6 +178,15 @@ public class ApplicationUser implements Serializable {
 	public void setUserId(long userId) {
 		this.userId = userId;
 	}
+	
+	
+	public long getNumFollowers() {
+		return numFollowers;
+	}
+
+	public void setNumFollowers(long numFollowers) {
+		this.numFollowers = numFollowers;
+	}
 
 	@JsonIgnore
 	public Set<Vestimonial> getVestimonials() {
@@ -211,6 +232,32 @@ public class ApplicationUser implements Serializable {
 	public void setSavedItems(Set<Item> savedItems) {
 		this.savedItems = savedItems;
 	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public byte[] getPic() {
+		return pic;
+	}
+
+	public void setPic(byte[] pic) {
+		this.pic = pic;
+	}
+
+	public LocalDateTime getCreatedDateTime() {
+		return createdDateTime;
+	}
+
+	public void setCreatedDateTime(LocalDateTime createdDateTime) {
+		this.createdDateTime = createdDateTime;
+	}
+	
+	
 	
 	
 

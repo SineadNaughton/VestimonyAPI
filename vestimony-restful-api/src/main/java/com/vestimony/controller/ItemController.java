@@ -28,7 +28,7 @@ public class ItemController {
 	@Autowired
 	private ItemService itemService;
 
-	@GetMapping(value = "/search/items")
+	@GetMapping(value = "/search")
 	public ResponseEntity<List<Item>> search(@RequestParam("itemName") String itemName) {
 		List<Item> items = itemService.search(itemName);
 		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
@@ -51,10 +51,24 @@ public class ItemController {
 	}
 
 	// filter
-	@GetMapping(value = "/filter/items")
+	/*@GetMapping(value = "/filter")
 	public ResponseEntity<List<Item>> filter(@RequestParam(defaultValue="") String brand,
+			@RequestParam(defaultValue="") String category) {
+		List<Item> items = itemService.findByBrandLikeAndColourLike(brand, category);
+		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+	}*/
+	
+	@GetMapping(value = "/filter/colour")
+	public ResponseEntity<List<Item>> filterColour(@RequestParam(defaultValue="") String brand,
 			@RequestParam(defaultValue="") String colour) {
-		List<Item> items = itemService.findByBrandLikeAndColourLike(brand, colour);
+		List<Item> items = itemService.findByBrandLikeAndColour(brand, colour);
+		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/filter")
+	public ResponseEntity<List<Item>> filterFull(@RequestParam(defaultValue="") String brand,
+			@RequestParam(defaultValue="") String category, @RequestParam(defaultValue="") String name) {
+		List<Item> items = itemService.findByBrandCategoryName(brand, category, name);
 		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
 	}
 	
@@ -67,7 +81,19 @@ public class ItemController {
 			return new ResponseEntity<Item>(item, HttpStatus.OK);
 		}
 
+		// trending
+		@GetMapping(value = "/toprated")
+		public ResponseEntity<List<Item>> getTopRated() {
+			List<Item> items = itemService.getTopRated();
+			return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+		}
 	
-	
+		
+		// newest
+		@GetMapping(value = "/new")
+		public ResponseEntity<List<Item>> getNewest() {
+			List<Item> items = itemService.getNewest();
+			return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+		}
 
 }

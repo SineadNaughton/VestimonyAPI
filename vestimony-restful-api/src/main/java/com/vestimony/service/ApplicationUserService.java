@@ -1,5 +1,6 @@
 package com.vestimony.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,8 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.google.common.io.ByteStreams;
 import com.vestimony.model.ApplicationUser;
+import com.vestimony.model.Image;
 import com.vestimony.model.Item;
 import com.vestimony.model.Post;
 import com.vestimony.repository.ApplicationUserRespository;
@@ -25,14 +29,14 @@ public class ApplicationUserService {
 	@Autowired
 	private ItemRepository itemRepository;
 
-	// get all
+	// GET ALL APPLCIATION USERS
 	public List<ApplicationUser> getAllApplicationUsers() {
 		List<ApplicationUser> applicationUsers = new ArrayList<>();
 		applicationUserRepository.findAll().forEach(applicationUsers::add);
 		return applicationUsers;
 	}
 	
-	//get by name
+	//GET APPLICAITON USER BY NAME
 	public List<ApplicationUser> findApplicationUserByUsername(String username) {
 		List<ApplicationUser> applicationUsers = new ArrayList<>();
 		applicationUserRepository.findByUsernameLikeIgnoreCase("%"+username+"%").forEach(applicationUsers::add);
@@ -40,37 +44,49 @@ public class ApplicationUserService {
 	}
 
 
-	// get one by id
-	public Optional<ApplicationUser> getApplicationUser(long id) {
-		return applicationUserRepository.findById(id);
+	// GET APPLICAITON USER BY ID
+	public ApplicationUser getApplicationUser(long id) {
+		return applicationUserRepository.findById(id).get();
 	}
 
-	// add one
-	public ApplicationUser addApplicationUser(ApplicationUser applicationUser) {
+	// CREATE APP USER
+	public String addApplicationUser(ApplicationUser applicationUser) {
+		String username = applicationUser.getUsername();
+		Optional<ApplicationUser> user = applicationUserRepository.findByUsernameIgnoreCase(username);
+		
+		if (user.isPresent()){
+			return "Username already exists, chose another";
+		}
+		String email = applicationUser.getEmail();
+		user = applicationUserRepository.findByEmail(email);
+		if (user.isPresent()){
+			return "Email already exists, please sign in";
+		}
+		
 		applicationUserRepository.save(applicationUser);
-		return applicationUser;
+		return "Signed up sucessfully";
 	}
 
-	// update
+	// UPDATE APP USER
 	public void updateApplicationUser(ApplicationUser applicationUser) {
 		applicationUserRepository.save(applicationUser);
 	}
 
-	// delete
+	// DELETE APP USER
 	public void removeApplicationUser(long id) {
 		applicationUserRepository.deleteById(id);
 	}
 
+	//GET THE CURRENT APP USER
 	public ApplicationUser getCurrentnUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
 		return user;
 	}
 	
-	//save item
+	//SAVE AN ITEM CURRENT USER LIKES
 	public String saveItem(long itemId) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
+		ApplicationUser user = this.getCurrentnUser();
 		Item item = itemRepository.findById(itemId).get();
 		
 		Set<Item> savedItems = user.getSavedItems();
@@ -89,6 +105,7 @@ public class ApplicationUserService {
 		
 	}
 	
+	//UNSAVE ITEM 
 	public String unsaveItem(long itemId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
@@ -99,7 +116,7 @@ public class ApplicationUserService {
 		user.setSavedItems(savedItems);
 		applicationUserRepository.save(user);
 		
-		//increase saved
+		//decrease saved
 		long numSaved = item.getNumSaved();
 		numSaved--;
 		item.setNumSaved(numSaved);
@@ -111,7 +128,7 @@ public class ApplicationUserService {
 
 
 
-
+	//CHECK IF CURRENT USER HAS SAVED AN ITEM
 	public boolean isItemSaved(long itemId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
@@ -123,6 +140,7 @@ public class ApplicationUserService {
 		return false;
 	}
 
+	//GET A LIST OF THE POSTS CURRENT USER HAS LIKED
 	public List<Post> getLikedPosts() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
@@ -132,6 +150,7 @@ public class ApplicationUserService {
 		
 	}
 
+	//GET LIST OF SAVED ITEMS
 	public List<Item> getSavedItems() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
@@ -139,12 +158,27 @@ public class ApplicationUserService {
 		 List<Item> items = new ArrayList<Item>(savedItems);
 		 return items;
 	}
-
+	
+	//GET LIST OF POSTS FOR A USERS PROFILE
 	public List<Post> getPostsForPorifle(long userId) {
 		ApplicationUser user = applicationUserRepository.findById(userId).get();
 		List<Post> posts = new ArrayList<>(user.getPosts());
 		return posts;
 		
 	}
+	
+	//ADD IMAGE TO USER PROFILE
+	public void addProfileImage(MultipartFile file) throws IOException {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
+		if (!file.isEmpty()) {
+			byte[] pic = ByteStreams.toByteArray(file.getInputStream());
+			user.setPic(pic);
+			applicationUserRepository.save(user);
+		}
+		
+	}
+	
+
 
 }

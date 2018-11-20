@@ -5,8 +5,9 @@ import java.util.Set;
 public class UserProfile {
 
 	private String username;
-	
-	private int height;
+	private long userId;
+	private int heightFeet;
+	private int heightInches;
 
 	private int sizeTop;
 
@@ -22,12 +23,15 @@ public class UserProfile {
 
 	public UserProfile(ApplicationUser appUser) {
 		super();
+		
 		this.username = appUser.getUsername();
-		this.height = appUser.getHeight();
+		this.heightFeet = appUser.getHeightFeet();
+		this.heightInches = appUser.getHeightInches();
 		this.sizeTop = appUser.getSizeTop();
 		this.sizeBottom = appUser.getSizeBottom();
 		this.bio = appUser.getBio();
 		this.posts=appUser.getPosts();
+		this.userId = appUser.getUserId();
 	}
 
 	
@@ -41,12 +45,22 @@ public class UserProfile {
 		this.username = username;
 	}
 
-	public int getHeight() {
-		return height;
+	public int getHeightFeet() {
+		return heightFeet;
 	}
 
-	public void setHeight(int height) {
-		this.height = height;
+	public void setHeightFeet(int heightFeet) {
+		this.heightFeet = heightFeet;
+	}
+	
+	
+
+	public int getHeightInches() {
+		return heightInches;
+	}
+
+	public void setHeightInches(int heightInches) {
+		this.heightInches = heightInches;
 	}
 
 	public int getSizeTop() {

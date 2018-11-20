@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,22 +25,29 @@ public class VestimonialController {
 	@Autowired
 	private VestimonialService vestimonialService;
 	
-	//create
-	@PostMapping(value="/{postId}/{itemId}")
-	public ResponseEntity<Vestimonial> createVestimonial(@PathVariable("postId") long postId, @PathVariable("itemId") long itemId, @RequestBody Vestimonial vestimonial ) {
-		vestimonialService.createVestimonial(vestimonial, itemId, postId);
+	//get one
+	@GetMapping(value="/{vestimonialId}")
+	public ResponseEntity<Vestimonial> geOneVestimonial(@PathVariable("vestimonialId") long vestimonialId){
+		Vestimonial vestimonial = vestimonialService.findById(vestimonialId);
 		return new ResponseEntity<Vestimonial>(vestimonial, HttpStatus.OK);
+	}
+	
+	//create
+	@PostMapping(value="/{postId}/{itemId}", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> createVestimonial(@PathVariable("postId") long postId, @PathVariable("itemId") long itemId, @RequestBody Vestimonial vestimonial ) {
+		String resp = vestimonialService.createVestimonial(vestimonial, postId, itemId);
+		return new ResponseEntity<String>(resp, HttpStatus.OK);
 	}
 	
 	//link existing
-	@PutMapping("/{vestimonialId}/link/{postId}")
-	public ResponseEntity<Vestimonial> linkVestimonialToPost(@PathVariable ("vestimonialId") long vestimonialId, @PathVariable ("postId") long postId){
-		Vestimonial vestimonial = vestimonialService.linkVestimonialToPost(postId, vestimonialId);
-		return new ResponseEntity<Vestimonial>(vestimonial, HttpStatus.OK);
+	@GetMapping("/{vestimonialId}/link/{postId}")
+	public ResponseEntity<String> linkVestimonialToPost(@PathVariable ("vestimonialId") long vestimonialId, @PathVariable ("postId") long postId){
+		String resp = vestimonialService.linkVestimonialToPost(postId, vestimonialId);
+		return new ResponseEntity<String>(resp, HttpStatus.OK);
 	}
 	
 	//get all for user
-	@GetMapping("/{userId}")
+	@GetMapping("/currentuser")
 	public ResponseEntity<List<Vestimonial>> getAllVestimonialsForUser(){
 		List<Vestimonial> vestimonials = vestimonialService.getAllVestimonialForUser();
 		return new ResponseEntity<List<Vestimonial>>(vestimonials, HttpStatus.OK);

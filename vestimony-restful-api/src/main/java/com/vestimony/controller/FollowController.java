@@ -22,23 +22,33 @@ public class FollowController {
 	private FollowService followService;
 	
 	
-	
+	//FOLLOW USER
 	@GetMapping("/{userId}")
-	public ApplicationUser followUser(@PathVariable long userId) {
-		return followService.followProfile(userId);
+	public ResponseEntity<String> followUser(@PathVariable long userId) {
+		String resp = followService.followProfile(userId);
+		return new ResponseEntity<String>(resp, HttpStatus.OK);
 	}
 	
-	@GetMapping("/{userId}/unfollow")
+	//UNFOLLOW
+	@GetMapping("/unfollow/{userId}")
 	public ResponseEntity<String> unfollowUser(@PathVariable long userId) {
 		String resp = followService.unfollowProfile(userId);
 		return new ResponseEntity<String>(resp, HttpStatus.OK);
 	}
 	
+	//GET POSTS FOR FOLLOWING
 	@GetMapping
 	public ResponseEntity<List<Post>> getFollowedPosts(){
 		List<Post> followedPosts = followService.getFollowingPosts();
 		return new ResponseEntity<List<Post>>(followedPosts, HttpStatus.OK);
 		
+	}
+	
+	//CHECK IS FOLLOWING
+	@GetMapping(value = "/isfollowing/{userId}")
+	public ResponseEntity<Boolean> isUserFollowing(@PathVariable long userId) {
+		boolean isFollowing = followService.isUserFollowing(userId);
+		return new ResponseEntity<Boolean>(isFollowing, HttpStatus.OK);
 	}
 	 
 
