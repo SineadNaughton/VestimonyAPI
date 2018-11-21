@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vestimony.model.ApplicationUser;
 import com.vestimony.model.Post;
 import com.vestimony.service.FollowService;
+import com.vestimony.service.PostService;
 
 @RestController
 @RequestMapping(value = "/vestimony/follow", consumes = "application/json", produces = "application/json")
@@ -20,6 +21,9 @@ public class FollowController {
 	
 	@Autowired
 	private FollowService followService;
+	
+	@Autowired
+	private PostService postService;
 	
 	
 	//FOLLOW USER
@@ -39,7 +43,7 @@ public class FollowController {
 	//GET POSTS FOR FOLLOWING
 	@GetMapping
 	public ResponseEntity<List<Post>> getFollowedPosts(){
-		List<Post> followedPosts = followService.getFollowingPosts();
+		List<Post> followedPosts = postService.getFollowingPosts();
 		return new ResponseEntity<List<Post>>(followedPosts, HttpStatus.OK);
 		
 	}

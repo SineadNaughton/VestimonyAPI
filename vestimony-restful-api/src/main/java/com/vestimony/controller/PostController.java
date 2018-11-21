@@ -38,7 +38,7 @@ public class PostController {
 	@ResponseBody
 	public String handlerFileUpload(@PathVariable long postId, @RequestParam("file") MultipartFile file) throws IOException {
 		imageService.createImage(file, postId);
-		return "Sucess"+ file.getOriginalFilename();
+		return "Sucess "+ file.getOriginalFilename();
 	}
 	
 	//image getter
@@ -64,7 +64,7 @@ public class PostController {
 	// get one post
 	@GetMapping(value = "/{postId}")
 	public ResponseEntity<Post> viewPost(@PathVariable("postId") long postId) {
-		Post post = postService.getPost(postId).get();
+		Post post = postService.viewPost(postId).get();
 		return new ResponseEntity<Post>(post, HttpStatus.OK);
 	}
 	

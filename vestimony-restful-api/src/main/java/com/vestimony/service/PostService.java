@@ -53,31 +53,8 @@ public class PostService {
 	public List<Post> getAllPosts() {
 		List<Post> posts = new ArrayList<>();
 		postRepository.findAll().forEach(posts::add);
-		for (Iterator<Post> iterator = posts.iterator(); iterator.hasNext();) {
-		    Post post = iterator.next();
-		    if(!this.hasRequired(post)) {
-		        iterator.remove();
-		    }
-		}
+		posts = this.removeIfNotFinished(posts);
 		return posts;
-	}
-	
-	//check immage and vestimonial
-	boolean hasRequired(Post post) {
-		if(post.getImages().size()>0 && post.getVestimonials().size()>0) {
-			return true;
-		}
-		return false;
-	}
-
-	// get one by id
-	public Optional<Post> getPost(long postId) {
-		return postRepository.findById(postId);
-	}
-
-	// delete posts with no review linked
-	public void deleteUnfinishedPosts() {
-
 	}
 
 	// view one post
@@ -85,6 +62,7 @@ public class PostService {
 		return postRepository.findById(postId);
 	}
 
+	//like a post
 	public String likePost(long postId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
@@ -111,6 +89,7 @@ public class PostService {
 
 	}
 
+	//check if post liked
 	public boolean islikedPost(long postId) {
 		// get user
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -126,6 +105,7 @@ public class PostService {
 		return false;
 	}
 
+	//unlike
 	public String unlikePost(long postId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
@@ -162,10 +142,10 @@ public class PostService {
 		}
 
 		List<Post> postsForItem = new ArrayList<>(posts);
+		postsForItem = this.removeIfNotFinished(postsForItem);
 		return postsForItem;
-
 	}
-	
+
 	// trending
 	public List<Post> getTrending() {
 		List<Post> posts = new ArrayList<>();
@@ -174,16 +154,49 @@ public class PostService {
 
 		postRepository.findByCreatedDateTimeBetweenOrderByNumLikesDesc(localDateTimeFrom, localDateTimeTo)
 				.forEach(posts::add);
-		
-		for (Iterator<Post> iterator = posts.iterator(); iterator.hasNext();) {
-		    Post post = iterator.next();
-		    if(!this.hasRequired(post)) {
-		        iterator.remove();
-		    }
+
+		posts = this.removeIfNotFinished(posts);
+		return posts;
+	}
+	
+	// GET POSTS FROM TEH USERS YOU FOLLOW
+	public List<Post> getFollowingPosts() {
+		// set user
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
+		// get list following
+		Set<ApplicationUser> following = user.getFollowing();
+
+		// list of post
+		List<Post> followedPosts = new ArrayList<>();
+		for (ApplicationUser followed : following) {
+			postRepository.findByApplicationUserOrderByCreatedDateTimeDesc(followed).forEach(followedPosts::add);
 		}
 		
+		followedPosts = this.removeIfNotFinished(followedPosts);
 
+		return followedPosts;
+	}
+	
+
+	// remove if no picture or vestimonial
+	List<Post> removeIfNotFinished(List<Post> posts) {
+		for (Iterator<Post> iterator = posts.iterator(); iterator.hasNext();) {
+			Post post = iterator.next();
+			if (!this.hasRequired(post)) {
+				iterator.remove();
+			}
+		}
 		return posts;
 
 	}
+	
+	// check immage and vestimonial
+		boolean hasRequired(Post post) {
+			if (post.getImages().size() > 0 && post.getVestimonials().size() > 0) {
+				return true;
+			}
+			return false;
+		}
+
 }
