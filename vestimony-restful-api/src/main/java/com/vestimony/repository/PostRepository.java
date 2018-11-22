@@ -14,7 +14,9 @@ import com.vestimony.model.Post;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
 	
-	List<Post> findByApplicationUserOrderByCreatedDateTimeDesc(ApplicationUser followed);
+	Iterable<Post> findByApplicationUserOrderByCreatedDateTimeDesc(ApplicationUser followed);
 	
 	public List<Post> findByCreatedDateTimeBetweenOrderByNumLikesDesc(LocalDateTime start, LocalDateTime end);
+
+	Iterable<Post> findByApplicationUser(ApplicationUser user);
 }

@@ -178,9 +178,22 @@ public class PostService {
 		return followedPosts;
 	}
 	
+	//GET LIST OF POSTS FOR A USERS PROFILE
+	public List<Post> getPostsForPorifle(long userId) {
+		ApplicationUser user = applicationUserRepository.findById(userId).get();
+		List<Post> posts = new ArrayList<>();
+
+		postRepository.findByApplicationUser(user)
+				.forEach(posts::add);
+
+		posts = this.removeIfNotFinished(posts);
+		return posts;
+		
+	}
+	
 
 	// remove if no picture or vestimonial
-	List<Post> removeIfNotFinished(List<Post> posts) {
+	public List<Post> removeIfNotFinished(List<Post> posts) {
 		for (Iterator<Post> iterator = posts.iterator(); iterator.hasNext();) {
 			Post post = iterator.next();
 			if (!this.hasRequired(post)) {

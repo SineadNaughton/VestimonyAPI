@@ -114,6 +114,14 @@ public class PostController {
 		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
 	}
 	
+	// GET POSTS CREATED BY USER
+	@GetMapping(value = "{userId}/posts")
+	public ResponseEntity<List<Post>> getPostsForProfile(@PathVariable long userId) {
+		List<Post> posts = postService.getPostsForPorifle(userId);
+		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
+	}
+
+	
 
 
 

@@ -29,6 +29,7 @@ import com.vestimony.model.UserProfile;
 
 import com.vestimony.service.ApplicationUserService;
 import com.vestimony.service.CustomUserDetailsService;
+import com.vestimony.service.PostService;
 import com.vestimony.service.UserProfileService;
 
 @RestController
@@ -38,6 +39,8 @@ public class ApplicationUserController {
 
 	@Autowired
 	private ApplicationUserService applicationUserService;
+	@Autowired
+	private PostService postService;
 	@Autowired
 	private UserProfileService userProfileService;
 
@@ -145,14 +148,9 @@ public class ApplicationUserController {
 	@GetMapping(value = "/likedposts")
 	public ResponseEntity<List<Post>> getLikedPosts() {
 		List<Post> posts = applicationUserService.getLikedPosts();
+		posts = postService.removeIfNotFinished(posts);
 		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
 	}
 
-	// GET POSTS CREATED BY USER
-	@GetMapping(value = "{userId}/posts")
-	public ResponseEntity<List<Post>> getPostsForProfile(@PathVariable long userId) {
-		List<Post> posts = applicationUserService.getPostsForPorifle(userId);
-		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
-	}
 
 }

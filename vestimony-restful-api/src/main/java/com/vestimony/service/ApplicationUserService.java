@@ -159,13 +159,7 @@ public class ApplicationUserService {
 		 return items;
 	}
 	
-	//GET LIST OF POSTS FOR A USERS PROFILE
-	public List<Post> getPostsForPorifle(long userId) {
-		ApplicationUser user = applicationUserRepository.findById(userId).get();
-		List<Post> posts = new ArrayList<>(user.getPosts());
-		return posts;
-		
-	}
+
 	
 	//ADD IMAGE TO USER PROFILE
 	public void addProfileImage(MultipartFile file) throws IOException {
