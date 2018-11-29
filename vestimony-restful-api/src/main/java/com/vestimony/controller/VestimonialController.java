@@ -53,6 +53,13 @@ public class VestimonialController {
 		return new ResponseEntity<List<Vestimonial>>(vestimonials, HttpStatus.OK);
 	}
 	
+	//get all for item
+	@GetMapping("/items/{itemId}")
+	public ResponseEntity<List<Vestimonial>> getAllVestimonialsForItem(@PathVariable ("itemId") long itemId){
+		List<Vestimonial> vestimonials = vestimonialService.getAllVestimonialForItem(itemId);
+		return new ResponseEntity<List<Vestimonial>>(vestimonials, HttpStatus.OK);
+	}
+	
 	//find vest by user and item
 	@GetMapping("unique/{itemId}")
 	public Optional<Vestimonial> getVest(@PathVariable ("itemId") long itemId){

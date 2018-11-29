@@ -19,6 +19,9 @@ public class WebCrawlerController {
 	public void webCrawler() throws UnirestException, IOException {
 		webCrawlerService.crawlTopShopNewIn();
 		webCrawlerService.crawlAsosNewIn();
+		webCrawlerService.crawlNewLookNewIn();
+		webCrawlerService.crawlDorothyPerkinsNewIn();
+		webCrawlerService.crawlMissSelfridgeNewIn();
 	}
 
 }

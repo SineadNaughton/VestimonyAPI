@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,44 +34,46 @@ public class WebCrawlerService {
 		final HttpResponse<String> response = Unirest.get(
 				"http://eu.topshop.com/webapp/wcs/stores/servlet/CatalogNavigationAjaxSearchResultCmd?storeId=13058&catalogId=34058&langId=-1&dimSelected=%2Fen%2Ftseu%2Fcategory%2Fnew-in-this-week-2169943%2Fnew-in-fashion-6367516%2FN-a0qZdgf%3FNrpp%3D20%26Ns%3Dproduct.freshnessRank%257C0%26siteId%3D%252F13058%26sort_field%3DNewness%26categoryId%3D339026")
 				.asString();
-	
+
 		String bodyString = response.getBody();
 		Integer recordsLength = JsonPath.read(bodyString, "$.results.contents[0].records.length()");
 
 		// foreach record in page
 		for (int i = 0; i < recordsLength; i++) {
-			LinkedHashMap record = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "]");
-			String resultName = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].name");
-			Double resultPrice = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].nowPrice");
-			String resultColour = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].colour");
-			String resultImageUrl = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].productImageUrl");
-			String resultProductUrl = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].productUrl");
+			LinkedHashMap record = JsonPath.using(conf).parse(bodyString)
+					.read("$.results.contents[0].records[" + i + "]");
+			String resultName = JsonPath.using(conf).parse(bodyString)
+					.read("$.results.contents[0].records[" + i + "].name");
+			Double resultPrice = JsonPath.using(conf).parse(bodyString)
+					.read("$.results.contents[0].records[" + i + "].nowPrice");
+			String resultColour = JsonPath.using(conf).parse(bodyString)
+					.read("$.results.contents[0].records[" + i + "].colour");
+			String resultImageUrl = JsonPath.using(conf).parse(bodyString)
+					.read("$.results.contents[0].records[" + i + "].productImageUrl");
+			String resultProductUrl = JsonPath.using(conf).parse(bodyString)
+					.read("$.results.contents[0].records[" + i + "].productUrl");
 			System.out.println(resultName);
 			System.out.println(resultPrice);
 			System.out.println(resultColour);
 			System.out.println(resultImageUrl);
 			System.out.println(resultProductUrl);
-			
+
 			String category = decideItemCategory(resultName);
-			
+
 			URL url = new URL(resultImageUrl);
-			BufferedImage originalImage=ImageIO.read(url);
-			ByteArrayOutputStream baos=new ByteArrayOutputStream();
-			ImageIO.write(originalImage, "jpg", baos );
-			byte[] pic=baos.toByteArray();
+			BufferedImage originalImage = ImageIO.read(url);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(originalImage, "jpg", baos);
+			byte[] pic = baos.toByteArray();
 
-
-			
 			Item item = new Item(resultName, resultColour, resultPrice, "Topshop", resultProductUrl, category, pic);
-			
-			
-			
+
 			Optional<Item> itemExists = itemRespository.findByUrl(resultProductUrl);
-			if(!itemExists.isPresent()) {
-				
+			if (!itemExists.isPresent()) {
+
 				itemRespository.save(item);
 			}
-			
+
 		}
 	}
 
@@ -107,12 +108,12 @@ public class WebCrawlerService {
 			System.out.println(resultPrice);
 
 			String category = decideItemCategory(resultName);
-			
+
 			URL url = new URL(resultImageUrl);
-			BufferedImage originalImage=ImageIO.read(url);
-			ByteArrayOutputStream baos=new ByteArrayOutputStream();
-			ImageIO.write(originalImage, "jpg", baos );
-			byte[] pic=baos.toByteArray();
+			BufferedImage originalImage = ImageIO.read(url);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(originalImage, "jpg", baos);
+			byte[] pic = baos.toByteArray();
 
 			Item item = new Item(resultName, resultColour, resultPrice, "ASOS", resultProductUrl, category, pic);
 
@@ -124,13 +125,145 @@ public class WebCrawlerService {
 		}
 	}
 
+	public void crawlNewLookNewIn() throws UnirestException, IOException {
+		final HttpResponse<String> response = Unirest.get(
+				"https://www.newlook.com/row/womens/new-in/c/row-womens-new-in/data-48.json?currency=EUR&language=en&lastIndexTime=1543316412822&page=0&q=:newest&sort=newest&text=")
+				.asString();
+
+		String bodyString = response.getBody();
+		Integer recordsLength = JsonPath.read(bodyString, "$.data.results.length()");
+
+		// foreach record in page
+		for (int i = 0; i < recordsLength; i++) {
+			LinkedHashMap record = JsonPath.using(conf).parse(bodyString).read("$.data.results.[" + i + "]");
+			String resultName = JsonPath.using(conf).parse(bodyString).read("$.data.results.[" + i + "].name");
+			Double resultPrice = JsonPath.using(conf).parse(bodyString).read("$.data.results.[" + i + "].price.value");
+			// String resultColour =
+			// JsonPath.using(conf).parse(bodyString).read("$.data.results.[" + i +
+			// "].colourOptions");
+			String resultImageUrl = "https:"
+					+ JsonPath.using(conf).parse(bodyString).read("$.data.results.[" + i + "].primaryImage.url");
+			String resultProductUrl = "https://www.newlook.com/row"
+					+ JsonPath.using(conf).parse(bodyString).read("$.data.results.[" + i + "].url");
+			System.out.println(resultName);
+			System.out.println(resultPrice);
+			// System.out.println(resultColour);
+			System.out.println(resultImageUrl);
+			System.out.println(resultProductUrl);
+
+			String category = decideItemCategory(resultName);
+
+			URL url = new URL(resultImageUrl);
+			BufferedImage originalImage = ImageIO.read(url);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(originalImage, "jpg", baos);
+			byte[] pic = baos.toByteArray();
+
+			Item item = new Item(resultName, "none", resultPrice, "New Look", resultProductUrl, category, pic);
+
+			Optional<Item> itemExists = itemRespository.findByUrl(resultProductUrl);
+			if (!itemExists.isPresent()) {
+
+				itemRespository.save(item);
+			}
+
+		}
+	}
+
+	public void crawlDorothyPerkinsNewIn() throws UnirestException, IOException {
+		final HttpResponse<String> response = Unirest.get(
+				"http://euro.dorothyperkins.com/webapp/wcs/stores/servlet/CatalogNavigationAjaxSearchResultCmd?storeId=13064&catalogId=34070&langId=-1&dimSelected=%2Fen%2Fdpeu%2Fcategory%2Fnew-in-2654368%2Fview-all-new-in-742133%2FN-a6sZc1s%3FNrpp%3D20%26Ns%3Dproduct.freshnessRank%257C0%26siteId%3D%252F13064%26sort_field%3DNewness%26categoryId%3D337606")
+				.asString();
+
+		String bodyString = response.getBody();
+		Integer recordsLength = JsonPath.read(bodyString, "$.results.contents[0].records.length()");
+
+		// foreach record in page
+		for (int i = 0; i < recordsLength; i++) {
+			LinkedHashMap record = JsonPath.using(conf).parse(bodyString)
+					.read("$.results.contents[0].records[" + i + "]");
+			String resultName = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].name");
+			Double resultPrice = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].nowPrice");
+			String resultColour = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].colour");
+			String resultImageUrl = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].productImageUrl");
+			String resultProductUrl = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].productUrl");
+			System.out.println(resultName);
+			System.out.println(resultPrice);
+			System.out.println(resultColour);
+			System.out.println(resultImageUrl);
+			System.out.println(resultProductUrl);
+
+			String category = decideItemCategory(resultName);
+
+			URL url = new URL(resultImageUrl);
+			BufferedImage originalImage = ImageIO.read(url);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(originalImage, "jpg", baos);
+			byte[] pic = baos.toByteArray();
+
+			Item item = new Item(resultName, resultColour, resultPrice, "Dorothy Perkins", resultProductUrl, category, pic);
+
+			Optional<Item> itemExists = itemRespository.findByUrl(resultProductUrl);
+			if (!itemExists.isPresent()) {
+
+				itemRespository.save(item);
+			}
+
+		}
+	}
+
+	
+	public void crawlMissSelfridgeNewIn() throws UnirestException, IOException {
+		final HttpResponse<String> response = Unirest.get(
+				"http://euro.missselfridge.com/webapp/wcs/stores/servlet/CatalogNavigationAjaxSearchResultCmd?storeId=13068&catalogId=34078&langId=-1&dimSelected=%2Fen%2Fmseu%2Fcategory%2Fnew-in-873725%2FN-80vZ8vv%3FNrpp%3D40%26Ns%3Dproduct.freshnessRank%257C0%26siteId%3D%252F13068%26sort_field%3DNewness%26categoryId%3D334483")
+				.asString();
+
+		String bodyString = response.getBody();
+		Integer recordsLength = JsonPath.read(bodyString, "$.results.contents[0].records.length()");
+
+		// foreach record in page
+		for (int i = 0; i < recordsLength; i++) {
+			LinkedHashMap record = JsonPath.using(conf).parse(bodyString)
+					.read("$.results.contents[0].records[" + i + "]");
+			String resultName = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].name");
+			Double resultPrice = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].nowPrice");
+			String resultColour = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].colour");
+			String resultImageUrl = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].productImageUrl");
+			String resultProductUrl = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].productUrl");
+			System.out.println(resultName);
+			System.out.println(resultPrice);
+			System.out.println(resultColour);
+			System.out.println(resultImageUrl);
+			System.out.println(resultProductUrl);
+
+			String category = decideItemCategory(resultName);
+
+			URL url = new URL(resultImageUrl);
+			BufferedImage originalImage = ImageIO.read(url);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(originalImage, "jpg", baos);
+			byte[] pic = baos.toByteArray();
+
+			Item item = new Item(resultName, resultColour, resultPrice, "Miss Selfridge", resultProductUrl, category, pic);
+
+			Optional<Item> itemExists = itemRespository.findByUrl(resultProductUrl);
+			if (!itemExists.isPresent()) {
+
+				itemRespository.save(item);
+			}
+
+		}
+	}
+
+	
 	String decideItemCategory(String name) {
 		name = name.toLowerCase();
 		if (name.contains("top") || name.contains("bodysuit") || name.contains("shirt") || name.contains("blouse")
-				|| name.contains("vest") || name.contains("cami") || name.contains("tee") || name.contains("tank")) {
+				|| name.contains("vest") || name.contains("cami") || name.contains("tee") || name.contains("tank")
+				|| name.contains("hoodie") || name.contains("hoody")) {
 			return "top";
 		} else if (name.contains("trouser") || name.contains("pant") || name.contains("legging")
-				|| name.contains("shorts") || name.contains("flare")) {
+				|| name.contains("shorts") || name.contains("flare") ||name.contains("jogger")) {
 			return "trouser";
 		} else if (name.contains("skirt")) {
 			return "skirt";
@@ -143,20 +276,24 @@ public class WebCrawlerService {
 				|| name.contains("wallet")) {
 			return "bag";
 		} else if (name.contains("boot") || name.contains("heel") || name.contains("shoe") || name.contains("pump")
-				|| name.contains("trainer")) {
+				|| name.contains("trainer") || name.contains("court") || name.contains("stiletto")
+				|| name.contains("platform") || name.contains("slingback")) {
 			return "shoe";
 		} else if (name.contains("jacket") || name.contains("coat")) {
 			return "coat";
 		} else if (name.contains("jean")) {
 			return "jeans";
+		} else if (name.contains("jumpsuit") || name.contains("playsuit") || name.contains("boiler")) {
+			return "jumpsuit";
+
+		} else if (name.contains("necklace") || name.contains("ear") || name.contains("bracelet")
+				|| name.contains("hat") || name.contains("scarf") || name.contains("glove") || name.contains("socks")
+				||name.contains("bra") ||name.contains("briefs") || name.contains("underwear")) {
+			return "accessory";
 		} else {
+
 			return "other";
 		}
 	}
-	
-	
-
-
-
 
 }

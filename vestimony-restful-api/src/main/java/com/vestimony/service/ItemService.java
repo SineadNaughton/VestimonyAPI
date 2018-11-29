@@ -25,8 +25,6 @@ public class ItemService {
 	@Autowired
 	private ItemRepository itemRepository;
 	
-	@Autowired
-	private  ApplicationUserRespository applicationUserRepository;
 	
 	//search by name
 	public List<Item> search(String itemName){

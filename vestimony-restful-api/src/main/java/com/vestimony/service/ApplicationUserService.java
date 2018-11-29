@@ -64,7 +64,7 @@ public class ApplicationUserService {
 		}
 		
 		applicationUserRepository.save(applicationUser);
-		return "Signed up sucessfully";
+		return "Signed up successfully";
 	}
 
 	// UPDATE APP USER
@@ -171,6 +171,19 @@ public class ApplicationUserService {
 			applicationUserRepository.save(user);
 		}
 		
+	}
+
+	public String editApplicationUser(ApplicationUser applicationUser) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
+	
+		user.setBio(applicationUser.getBio());
+		user.setHeightFeet(applicationUser.getHeightFeet());
+		user.setHeightInches(applicationUser.getHeightInches());
+		user.setSizeBottom(applicationUser.getSizeBottom());
+		user.setSizeTop(applicationUser.getSizeTop());
+		applicationUserRepository.save(user);
+		return "OK";
 	}
 	
 

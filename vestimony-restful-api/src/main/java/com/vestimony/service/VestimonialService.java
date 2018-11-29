@@ -67,21 +67,27 @@ public class VestimonialService {
 			item.setRating(newRating);
 			
 			int adjustment = vestimonial.getSizeBought() - vestimonial.getUsualSize();
+			
+			if(adjustment != 0) {
+				adjustment = adjustment/2;
+			}
+			
 			int adjustmentCurrentlyRecommended = item.getSizeAdjustment() * (int)numberReviews;
 			int newRecommendedAdjustment = (adjustmentCurrentlyRecommended + adjustment) /((int) numberReviews+1);
 			item.setSizeAdjustment(newRecommendedAdjustment);
-			item.setNumReviews(numberReviews++);
+			numberReviews++;
+			item.setNumReviews(numberReviews);
 			
 			
 			
 			
 			//save item
 			itemRepository.save(item);
-			return "vestimonial created";
+			return "OK";
 		}
 		else {
 			Vestimonial vestimonalExists = vestimonialRepository.findByApplicationUserAndItem(user, item).get();
-			return "vestimonials exists fro this item";  //link vestimonial
+			return "exists";  //link vestimonial
 		}
 		
 	}
@@ -121,6 +127,14 @@ public class VestimonialService {
 	public Vestimonial findById(long vestimonialId) {
 		Vestimonial vestimonial = vestimonialRepository.findById(vestimonialId).get();
 		return vestimonial;
+	}
+	
+	//get all for item
+	public List<Vestimonial> getAllVestimonialForItem(long itemId) {
+		Item item = itemRepository.findById(itemId).get();
+		List<Vestimonial> vestimonials = new ArrayList<>();
+		vestimonialRepository.findByItem(item).forEach(vestimonials::add);
+		return vestimonials;
 	}
 
 
