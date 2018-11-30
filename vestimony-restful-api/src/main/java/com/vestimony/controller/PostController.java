@@ -18,42 +18,34 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vestimony.model.ApplicationUser;
+import com.vestimony.model.Item;
 import com.vestimony.model.Post;
 import com.vestimony.model.Vestimonial;
+import com.vestimony.service.ApplicationUserService;
 import com.vestimony.service.ImageService;
+import com.vestimony.service.ItemService;
 import com.vestimony.service.PostService;
+import com.vestimony.service.VestimonialService;
 
 @RestController
-@RequestMapping(value = "/vestimony/posts") //, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/vestimony/posts" , consumes = MediaType.APPLICATION_JSON_VALUE, produces =MediaType.APPLICATION_JSON_VALUE)
 public class PostController {
 
 	@Autowired
 	private PostService postService;
-	
+
 	@Autowired
 	private ImageService imageService;
-	
-	//image upload
-	@PostMapping(value = "/image/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-	@ResponseBody
-	public String handlerFileUpload(@PathVariable long postId, @RequestParam("file") MultipartFile file) throws IOException {
-		imageService.createImage(file, postId);
-		return "Sucess "+ file.getOriginalFilename();
-	}
-	
-	//image getter
-	@GetMapping(value = "/image/{postId}", consumes = MediaType.ALL_VALUE, produces = MediaType.IMAGE_PNG_VALUE)
-	public byte[] getImageForPost(@PathVariable long postId) {
-		return imageService.getImageForPost(postId).getPic();
-	}
 
-	// create
-	@PostMapping
-	public ResponseEntity<Post> createPost(@RequestBody Post post) throws IOException {
-		postService.createPost(post);
-		return new ResponseEntity<Post>(post, HttpStatus.OK);
-	}
-	
+	@Autowired
+	private ApplicationUserService applicationUserService;
+
+	@Autowired
+	private ItemService itemService;
+
+	@Autowired
+	private VestimonialService vestimonialService;
+
 	// view all posts
 	@GetMapping
 	public ResponseEntity<List<Post>> getAllPosts() {
@@ -63,66 +55,60 @@ public class PostController {
 
 	// get one post
 	@GetMapping(value = "/{postId}")
-	public ResponseEntity<Post> viewPost(@PathVariable("postId") long postId) {
-		Post post = postService.viewPost(postId).get();
+	public ResponseEntity<Post> getPost(@PathVariable("postId") long postId) {
+		Post post = postService.getOnePost(postId).get();
 		return new ResponseEntity<Post>(post, HttpStatus.OK);
 	}
-	
-	//like post
-	@GetMapping(value="/{postId}/like", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> likePost(@PathVariable long postId) {
-		String resp = postService.likePost(postId);
-		//add to users liked posts
-		
-		return new ResponseEntity<String>(resp, HttpStatus.OK);
+
+	// create
+	@PostMapping
+	public ResponseEntity<Post> createPost(@RequestBody Post post) {
+		ApplicationUser user = applicationUserService.getCurrentUser();
+		postService.createPost(user, post);
+		return new ResponseEntity<Post>(post, HttpStatus.OK);
 	}
-	
-	//unlike
-	@GetMapping(value = "/{postId}/unlike", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> unlikePost(@PathVariable long postId) {
-		String resp = postService.unlikePost(postId);
-		//add to users liked posts
-		
-		return new ResponseEntity<String>(resp, HttpStatus.OK);
+
+	// image upload
+	@PostMapping(value = "/image/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+	@ResponseBody
+	public String addPostImage(@PathVariable long postId, @RequestParam("file") MultipartFile file)
+			throws IOException {
+		Post post = postService.getOnePost(postId).get();
+		imageService.createImage(file, post);
+		return "Sucess " + file.getOriginalFilename();
 	}
-	
-	//show liked
-	@GetMapping(value="/{postId}/isliked")
-	public ResponseEntity<Boolean> islikedPost(@PathVariable long postId) {
-		boolean isLiked = postService.islikedPost(postId);
-		//add to users liked posts
-		
-		return new ResponseEntity<Boolean>(isLiked, HttpStatus.OK);
+
+	// image getter
+	@GetMapping(value = "/image/{postId}", consumes = MediaType.ALL_VALUE, produces = MediaType.IMAGE_PNG_VALUE)
+	public byte[] getImageForPost(@PathVariable long postId) {
+		Post post = postService.getOnePost(postId).get();
+		return imageService.getImageForPost(post).getPic();
 	}
-	
-	
-	//get posts for a paraticular item
-	@GetMapping(value="/foritem/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
+
+	// get posts for a paraticular item
+	@GetMapping(value = "/foritem/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Post>> getPostsForItem(@PathVariable long itemId) {
-		List<Post> posts = postService.getPostsForItem(itemId);
-		//add to users liked posts
-		
+		Item item = itemService.findById(itemId);
+		List<Vestimonial> vestimonials = vestimonialService.getAllVestimonialForItem(item);
+		List<Post> posts = postService.getPostsForItem(vestimonials);
 		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
 	}
-	
-	//get trending
-	@GetMapping(value="/trending", produces = MediaType.APPLICATION_JSON_VALUE)
+
+	// get trending
+	@GetMapping(value = "/trending", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Post>> getTrending() {
 		List<Post> posts = postService.getTrending();
-		//add to users liked posts
-		
+		// add to users liked posts
+
 		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
 	}
-	
+
 	// GET POSTS CREATED BY USER
-	@GetMapping(value = "{userId}/posts")
+	@GetMapping(value = "users/{userId}")
 	public ResponseEntity<List<Post>> getPostsForProfile(@PathVariable long userId) {
-		List<Post> posts = postService.getPostsForPorifle(userId);
+		ApplicationUser user = applicationUserService.getApplicationUser(userId);
+		List<Post> posts = postService.getPostsForPorifle(user);
 		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
 	}
-
-	
-
-
 
 }

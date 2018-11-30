@@ -1,6 +1,5 @@
 package com.vestimony.service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,44 +9,18 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.vestimony.model.ApplicationUser;
-import com.vestimony.model.Item;
 import com.vestimony.model.Post;
 import com.vestimony.model.Vestimonial;
-import com.vestimony.repository.ApplicationUserRespository;
-import com.vestimony.repository.ItemRepository;
 import com.vestimony.repository.PostRepository;
-import com.vestimony.repository.VestimonialRepository;
 
 @Service
 public class PostService {
 
 	@Autowired
 	private PostRepository postRepository;
-
-	@Autowired
-	private ApplicationUserRespository applicationUserRepository;
-
-	@Autowired
-	private VestimonialRepository vestimonialRepository;
-
-	@Autowired
-	private ItemRepository itemRepository;
-
-	// create
-	public Post createPost(Post post) throws IOException {
-		// set user
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
-		post.setApplicationUser(user);
-		postRepository.save(post);
-		return post;
-	}
 
 	// get all
 	public List<Post> getAllPosts() {
@@ -57,90 +30,25 @@ public class PostService {
 		return posts;
 	}
 
-	// view one post
-	public Optional<Post> viewPost(long postId) {
+	// get one post
+	public Optional<Post> getOnePost(long postId) {
 		return postRepository.findById(postId);
 	}
 
-	//like a post
-	public String likePost(long postId) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
-		Post post = postRepository.findById(postId).get();
-		Set<ApplicationUser> likes = post.getLikes();
-		likes.add(user);
-		post.setLikes(likes);
-
-		// increase num likes
-		long numLikes = post.getNumLikes();
-		numLikes++;
-		post.setNumLikes(numLikes);
-
-		// save
+	// create
+	public Post createPost(ApplicationUser user, Post post) {
+		// set user
+		post.setApplicationUser(user);
 		postRepository.save(post);
-
-		// add to users likes
-		Set<Post> likedPosts = user.getLikedPost();
-		likedPosts.add(post);
-		user.setLikedPost(likedPosts);
-		applicationUserRepository.save(user);
-
-		return "Post liked";
-
+		return post;
 	}
 
-	//check if post liked
-	public boolean islikedPost(long postId) {
-		// get user
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
-
-		Post post = postRepository.findById(postId).get();
-
-		// check if post is liked
-		Set<Post> likedPosts = user.getLikedPost();
-		if (likedPosts.contains(post)) {
-			return true;
-		}
-		return false;
-	}
-
-	//unlike
-	public String unlikePost(long postId) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
-
-		Post post = postRepository.findById(postId).get();
-
-		// increase num likes
-		long numLikes = post.getNumLikes();
-		numLikes--;
-		post.setNumLikes(numLikes);
-
-		// save
-		postRepository.save(post);
-
-		// add to users likes
-		Set<Post> likedPosts = user.getLikedPost();
-		likedPosts.remove(post);
-		user.setLikedPost(likedPosts);
-		applicationUserRepository.save(user);
-
-		return "Post unliked";
-	}
-
-	// move to vestimonials
-	public List<Post> getPostsForItem(long itemId) {
-		Item item = itemRepository.findById(itemId).get();
-
-		List<Vestimonial> vestimonials = new ArrayList<>();
-		vestimonialRepository.findByItem(item).forEach(vestimonials::add);
-
+	// GET POSTS FEATURING AN ITEM
+	public List<Post> getPostsForItem(List<Vestimonial> vestimonials) {
 		Set<Post> posts = new HashSet<>();
 		for (Vestimonial v : vestimonials) {
 			posts.addAll(v.getPosts());
 		}
-
 		List<Post> postsForItem = new ArrayList<>(posts);
 		postsForItem = this.removeIfNotFinished(postsForItem);
 		return postsForItem;
@@ -159,38 +67,28 @@ public class PostService {
 		return posts;
 	}
 	
-	// GET POSTS FROM TEH USERS YOU FOLLOW
-	public List<Post> getFollowingPosts() {
-		// set user
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
-		// get list following
-		Set<ApplicationUser> following = user.getFollowing();
+	// GET LIST OF POSTS FOR A USERS PROFILE
+		public List<Post> getPostsForPorifle(ApplicationUser user) {
+			List<Post> posts = new ArrayList<>();
+			postRepository.findByApplicationUser(user).forEach(posts::add);
+			posts = this.removeIfNotFinished(posts);
+			return posts;
+		}
 
+
+	// GET POSTS FROM THE USERS YOU FOLLOW
+	public List<Post> getFollowingPosts(ApplicationUser user) {
+		// get list following
+		Set<ApplicationUser> usersFollowing = user.getFollowing();
 		// list of post
 		List<Post> followedPosts = new ArrayList<>();
-		for (ApplicationUser followed : following) {
+		for (ApplicationUser followed : usersFollowing) {
 			postRepository.findByApplicationUserOrderByCreatedDateTimeDesc(followed).forEach(followedPosts::add);
 		}
-		
 		followedPosts = this.removeIfNotFinished(followedPosts);
-
 		return followedPosts;
 	}
-	
-	//GET LIST OF POSTS FOR A USERS PROFILE
-	public List<Post> getPostsForPorifle(long userId) {
-		ApplicationUser user = applicationUserRepository.findById(userId).get();
-		List<Post> posts = new ArrayList<>();
 
-		postRepository.findByApplicationUser(user)
-				.forEach(posts::add);
-
-		posts = this.removeIfNotFinished(posts);
-		return posts;
-		
-	}
-	
 
 	// remove if no picture or vestimonial
 	public List<Post> removeIfNotFinished(List<Post> posts) {
@@ -203,13 +101,13 @@ public class PostService {
 		return posts;
 
 	}
-	
-	// check immage and vestimonial
-		boolean hasRequired(Post post) {
-			if (post.getImages().size() > 0 && post.getVestimonials().size() > 0) {
-				return true;
-			}
-			return false;
+
+	// check image and vestimonial
+	boolean hasRequired(Post post) {
+		if (post.getImages().size() > 0 && post.getVestimonials().size() > 0) {
+			return true;
 		}
+		return false;
+	}
 
 }

@@ -44,29 +44,8 @@ public class ApplicationUserController {
 	private PostService postService;
 	@Autowired
 	private UserProfileService userProfileService;
-
-	// GET PROFILE IMAGE
-	@GetMapping(value = "/image/{userId}", consumes = MediaType.ALL_VALUE, produces = MediaType.IMAGE_PNG_VALUE)
-	public byte[] getImage(@PathVariable long userId) {
-		byte[] pic = applicationUserService.getApplicationUser(userId).getPic();
-		return pic;
-	}
-
-	// GET CURRENT USER
-	@GetMapping("/currentuser")
-	public ResponseEntity<ApplicationUser> getCuurentUser() {
-		ApplicationUser applicationUser = applicationUserService.getCurrentnUser();
-		return new ResponseEntity<ApplicationUser>(applicationUser, HttpStatus.OK);
-
-	}
-
-	// GET ALL USERS
-	@GetMapping
-	public ResponseEntity<List<ApplicationUser>> getAllUsers() {
-		List<ApplicationUser> applicationUsers = applicationUserService.getAllApplicationUsers();
-		return new ResponseEntity<List<ApplicationUser>>(applicationUsers, HttpStatus.OK);
-	}
-
+	
+	
 	// GET ONE PROFILE TO VIEW
 	@GetMapping(value = "/profiles/{userId}", produces = "application/json")
 	public ResponseEntity<UserProfile> getUserProfile(@PathVariable long userId) {
@@ -75,6 +54,14 @@ public class ApplicationUserController {
 		return new ResponseEntity<UserProfile>(userProfile, HttpStatus.OK);
 	}
 
+	// GET PROFILE IMAGE
+	@GetMapping(value = "/image/{userId}", consumes = MediaType.ALL_VALUE, produces = MediaType.IMAGE_PNG_VALUE)
+	public byte[] getImage(@PathVariable long userId) {
+		byte[] pic = applicationUserService.getApplicationUser(userId).getPic();
+		return pic;
+	}
+
+
 	// GET ALL PROFILES OR ONE BY NAME
 	@GetMapping("/profiles")
 	public ResponseEntity<List<ApplicationUser>> getAllUserProfiles(
@@ -82,10 +69,8 @@ public class ApplicationUserController {
 		List<ApplicationUser> applicationUsers = new ArrayList<>();
 		if (username == "") {
 			applicationUsers = applicationUserService.getAllApplicationUsers();
-
 		} else {
 			applicationUsers = applicationUserService.findApplicationUserByUsername(username);
-
 		}
 		//List<UserProfile> userProfiles = userProfileService.getAllUserProfiles(applicationUsers);
 		return new ResponseEntity<List<ApplicationUser>>(applicationUsers, HttpStatus.OK);
@@ -93,10 +78,10 @@ public class ApplicationUserController {
 	}
 
 	// CREATE A PROFILE
-	@PostMapping(value = "/signup")
+	@PostMapping
 	@CrossOrigin
 	public ResponseEntity<String> addUser(@RequestBody ApplicationUser applicationUser) {
-		System.out.println(applicationUser);
+		
 		String resp = applicationUserService.addApplicationUser(applicationUser);
 		return new ResponseEntity<String>(resp, HttpStatus.OK);
 	}
@@ -104,7 +89,7 @@ public class ApplicationUserController {
 	// ADD PROFILE IMAGE
 	@PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
-	public ResponseEntity<String> handlerFileUpload( @RequestParam("file") MultipartFile file)
+	public ResponseEntity<String> addProfileImage( @RequestParam("file") MultipartFile file)
 			throws IOException {
 		applicationUserService.addProfileImage(file);
 		String resp= "Sucess " + file.getOriginalFilename();
@@ -115,52 +100,11 @@ public class ApplicationUserController {
 	@PutMapping(value = "/edit")
 	@CrossOrigin
 	public ResponseEntity<String> editUser(@RequestBody ApplicationUser applicationUser) {
-		System.out.println(applicationUser);
 		String resp = applicationUserService.editApplicationUser(applicationUser);
 		return new ResponseEntity<String>(resp, HttpStatus.OK);
 	}
 
-	// SAVE ITEM
-	@GetMapping(value = "/saveitem/{itemId}", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> saveItem(@PathVariable long itemId) {
-		String resp = applicationUserService.saveItem(itemId);
-		// add to users liked posts
-
-		return new ResponseEntity<String>(resp, HttpStatus.OK);
-	}
-
-	// UNSAVE ITEM
-	@GetMapping(value = "/unsaveitem/{itemId}", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> unsaveItem(@PathVariable long itemId) {
-		String resp = applicationUserService.unsaveItem(itemId);
-		// add to users liked posts
-
-		return new ResponseEntity<String>(resp, HttpStatus.OK);
-	}
-
-	// CHECK IF USER SAVED ITEM
-	@GetMapping(value = "/issaved/{itemId}")
-	public ResponseEntity<Boolean> isItemSaved(@PathVariable long itemId) {
-		boolean isLiked = applicationUserService.isItemSaved(itemId);
-		// add to users liked posts
-
-		return new ResponseEntity<Boolean>(isLiked, HttpStatus.OK);
-	}
-
-	// GAT USER'S SAVED ITEMS
-	@GetMapping(value = "/saveditems")
-	public ResponseEntity<List<Item>> getSavedItems() {
-		List<Item> items = applicationUserService.getSavedItems();
-		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
-	}
-
-	// GET USER'S LIKED POSTS
-	@GetMapping(value = "/likedposts")
-	public ResponseEntity<List<Post>> getLikedPosts() {
-		List<Post> posts = applicationUserService.getLikedPosts();
-		posts = postService.removeIfNotFinished(posts);
-		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
-	}
+	
 
 
 }

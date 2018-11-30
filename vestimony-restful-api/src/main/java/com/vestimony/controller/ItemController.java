@@ -28,14 +28,21 @@ public class ItemController {
 	@Autowired
 	private ItemService itemService;
 
-	@GetMapping(value = "/search")
-	public ResponseEntity<List<Item>> search(@RequestParam("itemName") String itemName) {
-		List<Item> items = itemService.search(itemName);
-		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
-
+	// get one
+	@GetMapping("/{itemId}")
+	public ResponseEntity<Item> getOne(@PathVariable long itemId) {
+		Item item = itemService.findById(itemId);
+		return new ResponseEntity<Item>(item, HttpStatus.OK);
 	}
-	
-	//image getter
+
+	// newest
+	@GetMapping(value = "/new")
+	public ResponseEntity<List<Item>> getNewest() {
+		List<Item> items = itemService.getNewest();
+		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+	}
+
+	// image getter
 	@GetMapping(value = "/image/{itemId}", consumes = MediaType.ALL_VALUE, produces = MediaType.IMAGE_PNG_VALUE)
 	public byte[] getImage(@PathVariable long itemId) {
 		return itemService.findById(itemId).getPic();
@@ -44,56 +51,22 @@ public class ItemController {
 	// get all
 	@GetMapping
 	public ResponseEntity<List<Item>> getAll() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		System.out.println(auth.getPrincipal());
 		List<Item> items = itemService.getAll();
 		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
 	}
 
-	// filter
-	/*@GetMapping(value = "/filter")
-	public ResponseEntity<List<Item>> filter(@RequestParam(defaultValue="") String brand,
-			@RequestParam(defaultValue="") String category) {
-		List<Item> items = itemService.findByBrandLikeAndColourLike(brand, category);
-		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
-	}*/
-	
-	@GetMapping(value = "/filter/colour")
-	public ResponseEntity<List<Item>> filterColour(@RequestParam(defaultValue="") String brand,
-			@RequestParam(defaultValue="") String colour) {
-		List<Item> items = itemService.findByBrandLikeAndColour(brand, colour);
-		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
-	}
-	
 	@GetMapping(value = "/filter")
-	public ResponseEntity<List<Item>> filterFull(@RequestParam(defaultValue="") String brand,
-			@RequestParam(defaultValue="") String category, @RequestParam(defaultValue="") String name) {
+	public ResponseEntity<List<Item>> filter(@RequestParam(defaultValue = "") String brand,
+			@RequestParam(defaultValue = "") String category, @RequestParam(defaultValue = "") String name) {
 		List<Item> items = itemService.findByBrandCategoryName(brand, category, name);
 		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
 	}
-	
-	// get one
-		@GetMapping("/{itemId}")
-		public ResponseEntity<Item> getOne(@PathVariable long itemId) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			System.out.println(auth.getPrincipal());
-			Item item = itemService.findById(itemId);
-			return new ResponseEntity<Item>(item, HttpStatus.OK);
-		}
 
-		// trending
-		@GetMapping(value = "/toprated")
-		public ResponseEntity<List<Item>> getTopRated() {
-			List<Item> items = itemService.getTopRated();
-			return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
-		}
-	
-		
-		// newest
-		@GetMapping(value = "/new")
-		public ResponseEntity<List<Item>> getNewest() {
-			List<Item> items = itemService.getNewest();
-			return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
-		}
+	// trending
+	@GetMapping(value = "/toprated")
+	public ResponseEntity<List<Item>> getTopRated() {
+		List<Item> items = itemService.getTopRated();
+		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
+	}
 
 }

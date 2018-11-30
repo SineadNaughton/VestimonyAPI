@@ -14,11 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.io.ByteStreams;
 import com.vestimony.model.ApplicationUser;
-import com.vestimony.model.Image;
-import com.vestimony.model.Item;
 import com.vestimony.model.Post;
 import com.vestimony.repository.ApplicationUserRespository;
-import com.vestimony.repository.ItemRepository;
 
 @Service
 public class ApplicationUserService {
@@ -26,8 +23,12 @@ public class ApplicationUserService {
 	@Autowired
 	private ApplicationUserRespository applicationUserRepository;
 	
-	@Autowired
-	private ItemRepository itemRepository;
+	//GET CURRENTY USER
+	public ApplicationUser getCurrentUser() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
+		return user;
+	}
 
 	// GET ALL APPLCIATION USERS
 	public List<ApplicationUser> getAllApplicationUsers() {
@@ -42,7 +43,6 @@ public class ApplicationUserService {
 		applicationUserRepository.findByUsernameLikeIgnoreCase("%"+username+"%").forEach(applicationUsers::add);
 		return applicationUsers;
 	}
-
 
 	// GET APPLICAITON USER BY ID
 	public ApplicationUser getApplicationUser(long id) {
@@ -76,106 +76,37 @@ public class ApplicationUserService {
 	public void removeApplicationUser(long id) {
 		applicationUserRepository.deleteById(id);
 	}
-
-	//GET THE CURRENT APP USER
-	public ApplicationUser getCurrentnUser() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
-		return user;
-	}
 	
-	//SAVE AN ITEM CURRENT USER LIKES
-	public String saveItem(long itemId) {
-		ApplicationUser user = this.getCurrentnUser();
-		Item item = itemRepository.findById(itemId).get();
-		
-		Set<Item> savedItems = user.getSavedItems();
-		savedItems.add(item);
-		user.setSavedItems(savedItems);
-		applicationUserRepository.save(user);
-		
-		//increase saved
-		long numSaved = item.getNumSaved();
-		numSaved++;
-		item.setNumSaved(numSaved);
-		itemRepository.save(item);
-		
-		return "Item Saved";
-		
-		
-	}
 	
-	//UNSAVE ITEM 
-	public String unsaveItem(long itemId) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
-		Item item = itemRepository.findById(itemId).get();
-		
-		Set<Item> savedItems = user.getSavedItems();
-		savedItems.remove(item);
-		user.setSavedItems(savedItems);
-		applicationUserRepository.save(user);
-		
-		//decrease saved
-		long numSaved = item.getNumSaved();
-		numSaved--;
-		item.setNumSaved(numSaved);
-		itemRepository.save(item);
-		
-		return "Saved item removed";
-		
-	}
-
-
-
-	//CHECK IF CURRENT USER HAS SAVED AN ITEM
-	public boolean isItemSaved(long itemId) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
-		Item item = itemRepository.findById(itemId).get();
-		Set<Item> savedItems = user.getSavedItems();
-		if(savedItems.contains(item)) {
-			return true;
+	//ADD IMAGE TO USER PROFILE
+		public void addProfileImage(MultipartFile file) throws IOException {
+			ApplicationUser user = this.getCurrentUser();
+			if (!file.isEmpty()) {
+				byte[] pic = ByteStreams.toByteArray(file.getInputStream());
+				user.setPic(pic);
+				applicationUserRepository.save(user);
+			}
+			
 		}
-		return false;
-	}
 
+	
 	//GET A LIST OF THE POSTS CURRENT USER HAS LIKED
 	public List<Post> getLikedPosts() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
+		ApplicationUser user = this.getCurrentUser();
 		Set<Post> likedPosts = user.getLikedPost();
 		 List<Post> posts = new ArrayList<Post>(likedPosts);
 		 return posts;
 		
 	}
 
-	//GET LIST OF SAVED ITEMS
-	public List<Item> getSavedItems() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
-		Set<Item> savedItems = user.getSavedItems();
-		 List<Item> items = new ArrayList<Item>(savedItems);
-		 return items;
-	}
+
 	
 
 	
-	//ADD IMAGE TO USER PROFILE
-	public void addProfileImage(MultipartFile file) throws IOException {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
-		if (!file.isEmpty()) {
-			byte[] pic = ByteStreams.toByteArray(file.getInputStream());
-			user.setPic(pic);
-			applicationUserRepository.save(user);
-		}
-		
-	}
-
+	
+	//EDIT ACCOUNT
 	public String editApplicationUser(ApplicationUser applicationUser) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		ApplicationUser user = applicationUserRepository.findByUsername(auth.getName());
+		ApplicationUser user = this.getCurrentUser();
 	
 		user.setBio(applicationUser.getBio());
 		user.setHeightFeet(applicationUser.getHeightFeet());

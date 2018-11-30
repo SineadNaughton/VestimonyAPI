@@ -31,14 +31,12 @@ public class ImageService {
 		return imageRepository.findById(imageId).get();
 	}
 	
-	public Image getImageForPost(long postId) {
-		Post post = postRepository.findById(postId).get();
+	public Image getImageForPost(Post post) {
 		 Image image = imageRepository.findFirstByPost(post);
 		 return image;
 	}
 
-	public void createImage(MultipartFile file, long postId) throws IOException {
-		Post post = postRepository.findById(postId).get();
+	public void createImage(MultipartFile file, Post post) throws IOException {
 		if (!file.isEmpty()) {
 			byte[] pic = ByteStreams.toByteArray(file.getInputStream());
 			Image image = new Image(file.getOriginalFilename(), "anytype", pic, post);
