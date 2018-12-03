@@ -3,13 +3,11 @@ package com.vestimony.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,19 +15,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vestimony.model.ApplicationUser;
-import com.vestimony.model.Item;
-import com.vestimony.model.Post;
-import com.vestimony.model.UserProfile;
-
 import com.vestimony.service.ApplicationUserService;
-import com.vestimony.service.CustomUserDetailsService;
 import com.vestimony.service.PostService;
 import com.vestimony.service.UserProfileService;
 
@@ -48,10 +40,10 @@ public class ApplicationUserController {
 	
 	// GET ONE PROFILE TO VIEW
 	@GetMapping(value = "/profiles/{userId}", produces = "application/json")
-	public ResponseEntity<UserProfile> getUserProfile(@PathVariable long userId) {
+	public ResponseEntity<ApplicationUser> getUserProfile(@PathVariable long userId) {
 		ApplicationUser applicationUser = applicationUserService.getApplicationUser(userId);
-		UserProfile userProfile = userProfileService.getUserProfile(applicationUser);
-		return new ResponseEntity<UserProfile>(userProfile, HttpStatus.OK);
+		//UserProfile userProfile = userProfileService.getUserProfile(applicationUser);
+		return new ResponseEntity<ApplicationUser>(applicationUser, HttpStatus.OK);
 	}
 
 	// GET PROFILE IMAGE
@@ -102,6 +94,13 @@ public class ApplicationUserController {
 	public ResponseEntity<String> editUser(@RequestBody ApplicationUser applicationUser) {
 		String resp = applicationUserService.editApplicationUser(applicationUser);
 		return new ResponseEntity<String>(resp, HttpStatus.OK);
+	}
+	
+	//Get current user
+	@GetMapping(value = "/currentuser", produces = "application/json")
+	public ResponseEntity<ApplicationUser> getCurrentUsere() {
+		ApplicationUser applicationUser = applicationUserService.getCurrentUser();
+		return new ResponseEntity<ApplicationUser>(applicationUser, HttpStatus.OK);
 	}
 
 	

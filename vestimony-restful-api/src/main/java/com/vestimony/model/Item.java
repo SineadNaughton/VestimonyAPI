@@ -1,7 +1,5 @@
 package com.vestimony.model;
 
-import java.io.Serializable;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table
-public class Item implements Serializable {
+public class Item  {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,10 +39,11 @@ public class Item implements Serializable {
 	@Column(length=1000000)
 	private byte[] pic;
 	private String category;
-	private int sizeAdjustment;
-	private int rating;
+	private float sizeAdjustment;
+	private float rating;
 	private long numReviews;
 	private long numSaved;
+	private long linkToBuy;
 	@Column
 	@CreationTimestamp
 	private LocalDateTime createdDateTime;
@@ -133,21 +132,19 @@ public class Item implements Serializable {
 		this.category = category;
 	}
 
-	
-
-	public int getSizeAdjustment() {
+	public float getSizeAdjustment() {
 		return sizeAdjustment;
 	}
 
-	public void setSizeAdjustment(int sizeAdjustment) {
+	public void setSizeAdjustment(float sizeAdjustment) {
 		this.sizeAdjustment = sizeAdjustment;
 	}
 
-	public int getRating() {
+	public float getRating() {
 		return rating;
 	}
 
-	public void setRating(int rating) {
+	public void setRating(float rating) {
 		this.rating = rating;
 	}
 
@@ -201,6 +198,16 @@ public class Item implements Serializable {
 		this.createdDateTime = createdDateTime;
 	}
 
+	public long getLinkToBuy() {
+		return linkToBuy;
+	}
+
+	public void setLinkToBuy(long linkToBuy) {
+		this.linkToBuy = linkToBuy;
+	}
+
+	
+	
 
 	
 	

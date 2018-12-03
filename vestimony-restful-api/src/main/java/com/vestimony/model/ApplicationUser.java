@@ -1,9 +1,6 @@
 package com.vestimony.model;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
-
-import javax.persistence.JoinColumn;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,11 +11,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -27,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table
-public class ApplicationUser implements Serializable {
+public class ApplicationUser {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +46,7 @@ public class ApplicationUser implements Serializable {
 	private int sizeBottom;
 	private String bio;
 	private long numFollowers;
+	private long linkToBuy;
 	
 	@Column
 	@CreationTimestamp
@@ -100,14 +98,18 @@ public class ApplicationUser implements Serializable {
 		this.role = "USER";
 	}
 
-
-
-
-
 	// methods
 
 	public int getHeightFeet() {
 		return heightFeet;
+	}
+
+	public long getLinkToBuy() {
+		return linkToBuy;
+	}
+
+	public void setLinkToBuy(long linkToBuy) {
+		this.linkToBuy = linkToBuy;
 	}
 
 	public void setHeightFeet(int heightFeet) {
@@ -162,7 +164,7 @@ public class ApplicationUser implements Serializable {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
+	
 	public String getPassword() {
 		return password;
 	}

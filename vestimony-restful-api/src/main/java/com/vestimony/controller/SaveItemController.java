@@ -40,7 +40,7 @@ public class SaveItemController {
 			Item item = itemService.findById(itemId);
 			String resp = saveItemService.saveItem(user, item);
 			// add to users liked posts
-			return new ResponseEntity<String>(resp, HttpStatus.OK);
+			return ResponseEntity.ok(resp);
 		}
 		
 		// UNSAVE ITEM

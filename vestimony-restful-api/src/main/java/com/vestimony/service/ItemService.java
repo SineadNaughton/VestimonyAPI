@@ -24,7 +24,7 @@ public class ItemService {
 		LocalDateTime localDateTimeFrom = LocalDateTime.now().minusDays(60);
 		LocalDateTime localDateTimeTo = LocalDateTime.now();
 
-		itemRepository.findByCreatedDateTimeBetween(localDateTimeFrom, localDateTimeTo).forEach(items::add);
+		itemRepository.findByCreatedDateTimeBetweenOrderByCreatedDateTimeDesc(localDateTimeFrom, localDateTimeTo).forEach(items::add);
 		return items;
 	}
 	
@@ -64,19 +64,19 @@ public class ItemService {
 	public void updateItemStats(Vestimonial vestimonial, Item item) {
 		// update item rating
 		int vestimonialRating = vestimonial.getRating();
-		int overallRating = item.getRating();
+		float overallRating = item.getRating();
 		long numberReviews = item.getNumReviews();
-		int total = (int) numberReviews * overallRating;
-		int newRating = (total + vestimonialRating) / ((int) numberReviews + 1);
+		float total = (int) numberReviews * overallRating;
+		float newRating = (total + vestimonialRating) / ((int) numberReviews + 1);
 		item.setRating(newRating);
 
 		// update item size adjustment
 		int adjustment = vestimonial.getSizeBought() - vestimonial.getUsualSize();
-		if (adjustment != 0) {
+		if (adjustment != 0 && !(item.getCategory().equals("shoe"))) {
 			adjustment = adjustment / 2;
 		}
-		int adjustmentCurrentlyRecommended = item.getSizeAdjustment() * (int) numberReviews;
-		int newRecommendedAdjustment = (adjustmentCurrentlyRecommended + adjustment) / ((int) numberReviews + 1);
+		float adjustmentCurrentlyRecommended = item.getSizeAdjustment() * (int) numberReviews;
+		float newRecommendedAdjustment = (adjustmentCurrentlyRecommended + adjustment) / ((int) numberReviews + 1);
 		item.setSizeAdjustment(newRecommendedAdjustment);
 
 		// update num reviews
@@ -86,6 +86,14 @@ public class ItemService {
 		// save item
 		itemRepository.save(item);
 
+	}
+	
+	//link to buy
+	public void followLinkToBuy(long itemId) {
+		Item item = this.findById(itemId);
+		long numFollowedLink = item.getLinkToBuy() +1;
+		item.setLinkToBuy(numFollowedLink);
+		itemRepository.save(item);
 	}
 
 }

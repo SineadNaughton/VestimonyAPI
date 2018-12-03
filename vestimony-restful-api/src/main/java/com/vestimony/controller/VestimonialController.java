@@ -65,13 +65,13 @@ public class VestimonialController {
 
 	// create
 	@PostMapping(value = "/{postId}/{itemId}", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<Vestimonial> createVestimonial(@PathVariable("postId") long postId,
+	public ResponseEntity<String> createVestimonial(@PathVariable("postId") long postId,
 			@PathVariable("itemId") long itemId, @RequestBody Vestimonial vestimonial) {
 		ApplicationUser user = applicationUserService.getCurrentUser();
 		Item item = itemService.findById(itemId);
 		Post post = postService.getOnePost(postId).get();
-		Vestimonial resp = vestimonialService.createVestimonial(vestimonial, user, item, post);
-		return new ResponseEntity<Vestimonial>(resp, HttpStatus.OK);
+		String resp = vestimonialService.createVestimonial(vestimonial, user, item, post);
+		return new ResponseEntity<String>(resp, HttpStatus.OK);
 	}
 
 	// link existing

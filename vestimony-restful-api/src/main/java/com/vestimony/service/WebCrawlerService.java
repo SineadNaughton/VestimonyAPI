@@ -1,15 +1,12 @@
 package com.vestimony.service;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,8 +37,6 @@ public class WebCrawlerService {
 
 		// foreach record in page
 		for (int i = 0; i < recordsLength; i++) {
-			LinkedHashMap record = JsonPath.using(conf).parse(bodyString)
-					.read("$.results.contents[0].records[" + i + "]");
 			String resultName = JsonPath.using(conf).parse(bodyString)
 					.read("$.results.contents[0].records[" + i + "].name");
 			Double resultPrice = JsonPath.using(conf).parse(bodyString)
@@ -50,7 +45,7 @@ public class WebCrawlerService {
 					.read("$.results.contents[0].records[" + i + "].colour");
 			String resultImageUrl = JsonPath.using(conf).parse(bodyString)
 					.read("$.results.contents[0].records[" + i + "].productImageUrl");
-			String resultProductUrl = JsonPath.using(conf).parse(bodyString)
+			String resultProductUrl = "http://www.topshop.com" + JsonPath.using(conf).parse(bodyString)
 					.read("$.results.contents[0].records[" + i + "].productUrl");
 			System.out.println(resultName);
 			System.out.println(resultPrice);
@@ -94,10 +89,9 @@ public class WebCrawlerService {
 			String resultName = JsonPath.using(conf).parse(bodyString).read("$.products[" + i + "].name");
 			Double resultPrice = JsonPath.using(conf).parse(bodyString)
 					.read("$.products[" + i + "].price.current.value");
-
 			String resultColour = JsonPath.using(conf).parse(bodyString).read("$.products[" + i + "].colour");
 			String resultImageUrl = JsonPath.using(conf).parse(bodyString).read("$.products[" + i + "].baseImageUrl");
-			String resultProductUrl = JsonPath.using(conf).parse(bodyString).read("$.products[" + i + "].url");
+			String resultProductUrl = "https://www.asos.com/" + JsonPath.using(conf).parse(bodyString).read("$.products[" + i + "].url");
 			System.out.println(resultName);
 			System.out.println(resultPrice);
 			System.out.println(resultColour);
@@ -135,7 +129,6 @@ public class WebCrawlerService {
 
 		// foreach record in page
 		for (int i = 0; i < recordsLength; i++) {
-			LinkedHashMap record = JsonPath.using(conf).parse(bodyString).read("$.data.results.[" + i + "]");
 			String resultName = JsonPath.using(conf).parse(bodyString).read("$.data.results.[" + i + "].name");
 			Double resultPrice = JsonPath.using(conf).parse(bodyString).read("$.data.results.[" + i + "].price.value");
 			// String resultColour =
@@ -180,13 +173,11 @@ public class WebCrawlerService {
 
 		// foreach record in page
 		for (int i = 0; i < recordsLength; i++) {
-			LinkedHashMap record = JsonPath.using(conf).parse(bodyString)
-					.read("$.results.contents[0].records[" + i + "]");
 			String resultName = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].name");
 			Double resultPrice = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].nowPrice");
 			String resultColour = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].colour");
 			String resultImageUrl = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].productImageUrl");
-			String resultProductUrl = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].productUrl");
+			String resultProductUrl = "http://euro.dorothyperkins.com" + JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].productUrl");
 			System.out.println(resultName);
 			System.out.println(resultPrice);
 			System.out.println(resultColour);
@@ -223,13 +214,11 @@ public class WebCrawlerService {
 
 		// foreach record in page
 		for (int i = 0; i < recordsLength; i++) {
-			LinkedHashMap record = JsonPath.using(conf).parse(bodyString)
-					.read("$.results.contents[0].records[" + i + "]");
 			String resultName = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].name");
 			Double resultPrice = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].nowPrice");
 			String resultColour = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].colour");
 			String resultImageUrl = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].productImageUrl");
-			String resultProductUrl = JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].productUrl");
+			String resultProductUrl = "http://euro.missselfridge.com/" + JsonPath.using(conf).parse(bodyString).read("$.results.contents[0].records[" + i + "].productUrl");
 			System.out.println(resultName);
 			System.out.println(resultPrice);
 			System.out.println(resultColour);

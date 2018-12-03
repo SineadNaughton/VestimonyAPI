@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		ApplicationUser applicationUser = loadApplicationUserByUsername(username);
 		UserDetails user = User.withUsername(applicationUser.getUsername())
-                .password(encoder.encode(applicationUser.getPassword()))
+                .password(applicationUser.getPassword())
                 .roles("USER").build();
 		
 		 return user;

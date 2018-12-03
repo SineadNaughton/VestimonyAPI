@@ -27,7 +27,8 @@ public class FollowService {
 
 			// INCREASE FOLLOWERS OF USER TO FOLLOW
 			long numFollowers = userToFollow.getNumFollowers();
-			userToFollow.setNumFollowers(numFollowers++);
+			numFollowers++;
+			userToFollow.setNumFollowers(numFollowers);
 			applicationUserRepository.save(userToFollow);
 		}
 		return "following user";
@@ -44,7 +45,8 @@ public class FollowService {
 
 			// set number of followers
 			long numFollowers = userToUnfollow.getNumFollowers();
-			userToUnfollow.setNumFollowers(numFollowers++);
+			numFollowers--;
+			userToUnfollow.setNumFollowers(numFollowers);
 			applicationUserRepository.save(userToUnfollow);
 
 			return "User unfollowed";

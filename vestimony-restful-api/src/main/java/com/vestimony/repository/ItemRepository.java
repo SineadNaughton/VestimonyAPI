@@ -31,7 +31,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 	public List<Item> findByBrandLikeIgnoreCaseAndColourLikeIgnoreCase(List<String> brands, List<String> colour);
 	
 	public List<Item> findByCreatedDateTimeBetweenOrderByRatingDesc(LocalDateTime start, LocalDateTime end);
-	public List<Item> findByCreatedDateTimeBetween(LocalDateTime start, LocalDateTime end);
+	public List<Item> findByCreatedDateTimeBetweenOrderByCreatedDateTimeDesc(LocalDateTime start, LocalDateTime end);
 
 
 	//filter sort

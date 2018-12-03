@@ -1,24 +1,21 @@
 package com.vestimony.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mashape.unirest.http.exceptions.UnirestException;
 import com.vestimony.model.Item;
+import com.vestimony.service.ApplicationUserService;
 import com.vestimony.service.ItemService;
-import com.vestimony.service.WebCrawlerService;
 
 @RestController
 
@@ -27,6 +24,9 @@ public class ItemController {
 
 	@Autowired
 	private ItemService itemService;
+
+	@Autowired
+	private ApplicationUserService applicationUserService;
 
 	// get one
 	@GetMapping("/{itemId}")
@@ -68,5 +68,17 @@ public class ItemController {
 		List<Item> items = itemService.getTopRated();
 		return new ResponseEntity<List<Item>>(items, HttpStatus.OK);
 	}
+	
+	//increase num followed link to buy
+	@PostMapping(value = "/linktobuy/{itemId}")
+	public ResponseEntity<String> followLinkToBuy(@PathVariable long itemId, @RequestParam(defaultValue = "") String userId) {
+		itemService.followLinkToBuy(itemId);
+		if (userId!="") {
+			long id = Integer.parseInt(userId);
+			applicationUserService.followLinkToBuy(id);
+		}
+		return new ResponseEntity<String>("OK", HttpStatus.OK);
+	}
+	
 
 }

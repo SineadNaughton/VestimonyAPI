@@ -47,7 +47,7 @@ public class VestimonialService {
 	}
 
 	// create new --add post to this
-	public Vestimonial createVestimonial(Vestimonial vestimonial, ApplicationUser user, Item item, Post post) {
+	public String createVestimonial(Vestimonial vestimonial, ApplicationUser user, Item item, Post post) {
 		// set user and item
 		vestimonial.setApplicationUser(user);
 		vestimonial.setItem(item);
@@ -61,10 +61,10 @@ public class VestimonialService {
 			postRepository.save(post);
 			//update item
 			itemService.updateItemStats(vestimonial, item);
-			return vestimonial;
+			return "OK";
 		} else {
 			Vestimonial vestimonalExists = vestimonialRepository.findByApplicationUserAndItem(user, item).get();
-			return vestimonalExists;
+			return "Already Exisits: "+ vestimonalExists.getVestimonialId();
 		}
 
 	}

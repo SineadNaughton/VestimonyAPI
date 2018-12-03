@@ -9,6 +9,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,6 +64,10 @@ public class ApplicationUserService {
 			return "Email already exists, please sign in";
 		}
 		
+		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+		String bCryptPassword = bCryptPasswordEncoder.encode(applicationUser.getPassword());		
+		applicationUser.setPassword(bCryptPassword);
+		
 		applicationUserRepository.save(applicationUser);
 		return "Signed up successfully";
 	}
@@ -115,6 +120,14 @@ public class ApplicationUserService {
 		user.setSizeTop(applicationUser.getSizeTop());
 		applicationUserRepository.save(user);
 		return "OK";
+	}
+
+	public void followLinkToBuy(long userId) {
+		ApplicationUser user = getApplicationUser(userId);
+		long numFollowedLink = user.getLinkToBuy() +1 ;
+		user.setLinkToBuy(numFollowedLink);
+		applicationUserRepository.save(user);
+		
 	}
 	
 
