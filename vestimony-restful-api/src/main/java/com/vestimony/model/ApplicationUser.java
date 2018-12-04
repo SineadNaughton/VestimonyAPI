@@ -57,27 +57,27 @@ public class ApplicationUser {
 	@Column(length=1000000)
 	private byte[] pic;
 
-	@OneToMany(mappedBy = "applicationUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "applicationUser", fetch = FetchType.LAZY, cascade=CascadeType.PERSIST)
 	private Set<Vestimonial> vestimonials = new HashSet<Vestimonial>();
 
-	@OneToMany(mappedBy = "applicationUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "applicationUser", fetch = FetchType.LAZY, cascade=CascadeType.PERSIST)
 	private Set<Post> posts = new HashSet<Post>();
 
 	
 	//following, liked, saved
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "following", joinColumns = { @JoinColumn(name = "follower") }, inverseJoinColumns = {
-			@JoinColumn(name = "following") })
+	@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+	@JoinTable(name = "following", joinColumns = { @JoinColumn(name = "userId_follower") }, inverseJoinColumns = {
+			@JoinColumn(name = "userId_following") })
 	private Set<ApplicationUser> following = new HashSet<ApplicationUser>();
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "likedPosts", joinColumns = { @JoinColumn(name = "userThatLikes") }, inverseJoinColumns = {
-			@JoinColumn(name = "postLiked") })
+	@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+	@JoinTable(name = "likedPosts", joinColumns = { @JoinColumn(name = "userId") }, inverseJoinColumns = {
+			@JoinColumn(name = "postId") })
 	private Set<Post> likedPost = new HashSet<Post>();
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "savedItems", joinColumns = { @JoinColumn(name = "userThatSaved") }, inverseJoinColumns = {
-			@JoinColumn(name = "itemSaved") })
+	@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+	@JoinTable(name = "savedItems", joinColumns = { @JoinColumn(name = "userId") }, inverseJoinColumns = {
+			@JoinColumn(name = "itemId") })
 	private Set<Item> savedItems = new HashSet<Item>();
 
 	// constructors

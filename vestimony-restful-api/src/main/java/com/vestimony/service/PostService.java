@@ -39,6 +39,7 @@ public class PostService {
 	public Post createPost(ApplicationUser user, Post post) {
 		// set user
 		post.setApplicationUser(user);
+		post.setUserId(user.getUserId());
 		postRepository.save(post);
 		return post;
 	}

@@ -13,7 +13,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -32,6 +31,7 @@ public class Post {
 	private long postId;
 
 	private String postInfo;
+	private long userId;
 
 	private long numLikes;
 
@@ -55,10 +55,7 @@ public class Post {
 	
 	
 	@ManyToMany(fetch = FetchType.LAZY,
-            cascade = {
-                CascadeType.PERSIST,
-                CascadeType.MERGE
-            },
+			cascade=CascadeType.PERSIST,
             mappedBy = "likedPost")
 	private Set<ApplicationUser> likes = new HashSet<ApplicationUser>();
 	
@@ -75,6 +72,16 @@ public class Post {
 		this.postInfo = postInfo;
 		this.applicationUser = applicationUser;
 
+	}
+	
+	
+
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
 	}
 
 	public long getPostId() {
@@ -101,6 +108,7 @@ public class Post {
 		this.numLikes = numLikes;
 	}
 
+	@JsonIgnore
 	public ApplicationUser getApplicationUser() {
 		return applicationUser;
 	}

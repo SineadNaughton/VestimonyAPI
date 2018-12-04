@@ -48,13 +48,12 @@ public class Item  {
 	@CreationTimestamp
 	private LocalDateTime createdDateTime;
 	
-	@OneToMany(mappedBy="item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy="item", fetch = FetchType.LAZY)
 	private Set<Vestimonial> vestimonials = new HashSet<Vestimonial>();
 	
 	@ManyToMany(fetch = FetchType.LAZY,
             cascade = {
-                CascadeType.PERSIST,
-                CascadeType.MERGE
+                CascadeType.ALL
             },
             mappedBy = "savedItems")
 	private Set<ApplicationUser> saves = new HashSet<ApplicationUser>();

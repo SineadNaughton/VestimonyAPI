@@ -8,6 +8,7 @@ public class UserProfile {
 	private long userId;
 	private int heightFeet;
 	private int heightInches;
+	private long numFollowers;
 
 	private int sizeTop;
 
@@ -23,7 +24,7 @@ public class UserProfile {
 
 	public UserProfile(ApplicationUser appUser) {
 		super();
-		
+		this.userId =appUser.getUserId();
 		this.username = appUser.getUsername();
 		this.heightFeet = appUser.getHeightFeet();
 		this.heightInches = appUser.getHeightInches();
@@ -32,10 +33,19 @@ public class UserProfile {
 		this.bio = appUser.getBio();
 		this.posts=appUser.getPosts();
 		this.userId = appUser.getUserId();
+		this.numFollowers = appUser.getNumFollowers();
 	}
 
 	
 	
+
+	public long getNumFollowers() {
+		return numFollowers;
+	}
+
+	public void setNumFollowers(long numFollowers) {
+		this.numFollowers = numFollowers;
+	}
 
 	public String getUsername() {
 		return username;
@@ -94,6 +104,16 @@ public class UserProfile {
 	public void setPosts(Set<Post> posts) {
 		this.posts = posts;
 	}
+
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+	
+	
 	
 	
 

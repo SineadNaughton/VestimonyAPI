@@ -1,11 +1,9 @@
 package com.vestimony.model;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table
-public class Vestimonial implements Serializable  {
+public class Vestimonial  {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,10 +46,6 @@ public class Vestimonial implements Serializable  {
 	private ApplicationUser applicationUser;
 	
 	@ManyToMany(fetch = FetchType.LAZY,
-            cascade = {
-                CascadeType.PERSIST,
-                CascadeType.MERGE
-            },
             mappedBy = "vestimonials")
 	private Set<Post> posts = new HashSet<Post>();
 
@@ -107,6 +101,7 @@ public class Vestimonial implements Serializable  {
 		this.item = item;
 	}
 
+	@JsonIgnore
 	public ApplicationUser getApplicationUser() {
 		return applicationUser;
 	}

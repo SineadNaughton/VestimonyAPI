@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vestimony.model.ApplicationUser;
+import com.vestimony.model.UserProfile;
 import com.vestimony.service.ApplicationUserService;
 import com.vestimony.service.PostService;
 import com.vestimony.service.UserProfileService;
@@ -32,18 +33,17 @@ public class ApplicationUserController {
 
 	@Autowired
 	private ApplicationUserService applicationUserService;
-	@Autowired
-	private PostService postService;
+
 	@Autowired
 	private UserProfileService userProfileService;
 	
 	
 	// GET ONE PROFILE TO VIEW
 	@GetMapping(value = "/profiles/{userId}", produces = "application/json")
-	public ResponseEntity<ApplicationUser> getUserProfile(@PathVariable long userId) {
+	public ResponseEntity<UserProfile> getUserProfile(@PathVariable long userId) {
 		ApplicationUser applicationUser = applicationUserService.getApplicationUser(userId);
-		//UserProfile userProfile = userProfileService.getUserProfile(applicationUser);
-		return new ResponseEntity<ApplicationUser>(applicationUser, HttpStatus.OK);
+		UserProfile userProfile = userProfileService.getUserProfile(applicationUser);
+		return new ResponseEntity<UserProfile>(userProfile, HttpStatus.OK);
 	}
 
 	// GET PROFILE IMAGE
@@ -55,17 +55,16 @@ public class ApplicationUserController {
 
 
 	// GET ALL PROFILES OR ONE BY NAME
-	@GetMapping("/profiles")
-	public ResponseEntity<List<ApplicationUser>> getAllUserProfiles(
-			@RequestParam(value = "username", defaultValue = "") String username) {
+	@GetMapping("/profiles/search/{username}")
+	public ResponseEntity<List<UserProfile>> searchUserProfiles(@PathVariable(value = "username") String username) {
 		List<ApplicationUser> applicationUsers = new ArrayList<>();
 		if (username == "") {
 			applicationUsers = applicationUserService.getAllApplicationUsers();
 		} else {
 			applicationUsers = applicationUserService.findApplicationUserByUsername(username);
 		}
-		//List<UserProfile> userProfiles = userProfileService.getAllUserProfiles(applicationUsers);
-		return new ResponseEntity<List<ApplicationUser>>(applicationUsers, HttpStatus.OK);
+		List<UserProfile> userProfiles = userProfileService.getAllUserProfiles(applicationUsers);
+		return new ResponseEntity<List<UserProfile>>(userProfiles, HttpStatus.OK);
 
 	}
 

@@ -50,6 +50,7 @@ public class PostController {
 	@GetMapping
 	public ResponseEntity<List<Post>> getAllPosts() {
 		List<Post> posts = postService.getAllPosts();
+		
 		return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
 	}
 

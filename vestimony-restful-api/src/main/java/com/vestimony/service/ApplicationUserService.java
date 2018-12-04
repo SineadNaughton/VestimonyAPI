@@ -52,16 +52,18 @@ public class ApplicationUserService {
 
 	// CREATE APP USER
 	public String addApplicationUser(ApplicationUser applicationUser) {
-		String username = applicationUser.getUsername();
+		String username = applicationUser.getUsername().toLowerCase();
+		applicationUser.setUsername(username);
 		Optional<ApplicationUser> user = applicationUserRepository.findByUsernameIgnoreCase(username);
 		
 		if (user.isPresent()){
-			return "Username already exists, chose another";
+			return "Username already exists";
 		}
-		String email = applicationUser.getEmail();
+		String email = applicationUser.getEmail().toLowerCase();
+		applicationUser.setEmail(email);
 		user = applicationUserRepository.findByEmail(email);
 		if (user.isPresent()){
-			return "Email already exists, please sign in";
+			return "Email already exists";
 		}
 		
 		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
